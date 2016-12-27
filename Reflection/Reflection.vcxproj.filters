@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\zhihe">
+      <UniqueIdentifier>{4633558e-b259-4268-8d4b-04c5ae53118f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{3f54dd8d-dd94-465a-ab52-aaec828bef62}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="hpp\tlstring.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\rtti.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\types.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\utils.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\make.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\compiler.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\arch.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\typearray.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\property.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\ConstValue.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\trace.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\functraits.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="test\object.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\struct.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\tmplt.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\reflection.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\typetraits.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\typelist.h">
+      <Filter>头文件\zhihe</Filter>
+    </ClInclude>
+    <ClInclude Include="test\display.h">
+      <Filter>test</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Reflection.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
