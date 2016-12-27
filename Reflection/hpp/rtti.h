@@ -273,7 +273,7 @@ namespace zhihe
 #define DECL_OBJECT2(B1,B2)                            \
     public:    typedef B1 base;                        \
     public:    typedef typename B1::RootType RootType;          \
-	public:    typedef zhihe::TRtti2<self,B1,B2> RunTime;					\
+	public:    typedef zhihe::TRtti2<self,B1,B2> RunTime;		\
     DECL_RTTI_CORE(self);     \
 	public:    static  zhihe::Type type() { return RunTime::rtti; } \
     xStaticAssert(IS_D_FROM_B_STRICT(self,B1),class_not_derived_from_##B1); \

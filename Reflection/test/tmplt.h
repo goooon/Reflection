@@ -43,7 +43,9 @@ namespace ts
 	};
 	template <typename T>
 	class TDerivedObject : public TObject<T, 20>, public TStruct<T> {
-		DECL_OBJECT(TPLT(TDerivedObject, T), TObject, TStruct);
+		typedef TObject<T, 20> BASE1;
+		typedef TStruct<T> BASE2;
+		DECL_OBJECT(TPLT(TDerivedObject, T), BASE1, TStruct<T>);
 	public:
 		char* _char = "TDerivedObject";
 	public:
