@@ -12,7 +12,7 @@ There are no dependencies in the runtime so building is pretty straightforward.
 
 
 #### Examples
-You will find some demo int test dir
+You will find some demo in test directory
 
 ### Limits
 Enum not supported, virtual inheritance of class not supported
