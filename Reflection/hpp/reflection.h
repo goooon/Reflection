@@ -32,7 +32,6 @@ namespace zhihe
 		static zhihe::Type::Rtti rtti;
 	};
 
-
 	template<typename T>
 	struct TClass<T&> {
 		typedef T& Type;
@@ -47,7 +46,6 @@ namespace zhihe
 		static BaseTypes prop[2];
 		static zhihe::Type::Rtti rtti;
 	};
-
 
 	template<typename T>
 	struct TClass<const T> {
@@ -64,7 +62,6 @@ namespace zhihe
 		static BaseTypes prop[2];
 		static zhihe::Type::Rtti rtti;
 	};
-
 
 	template<typename T, int N>
 	struct TClass<T[N]> {
@@ -96,42 +93,30 @@ namespace zhihe
 		static zhihe::Type::Rtti rtti;
 	};
 
-	//template <typename T>
-	//class has_TypeName
-	//{
-	//	typedef char one;
-	//	typedef long two;
- //       //typedef typename T::TypeDesc  Desc;
-	//	template <typename C> static two test(...);
-	//	template <typename C> static one test(typename T::TypeDesc);
-	//public:
-	//	enum { value = sizeof(test<T>(0)) == sizeof(char) };
-	//};
+	namespace internal{
+		template<typename T, int _Index>
+		struct IndexedTWrap
+		{
+			typedef T type;
+			enum { Index = _Index };
+		};
 
-	template<typename T, int _Index>
-	struct IndexedTWrap
-	{
-		typedef T type;
-		//static T gettype();
-		enum { Index = _Index };
-	};
+		struct _GetClass_TypeOrTHelper
+		{
+			template<typename T>
+			static IndexedTWrap<typename T::TypeDesc, 1>     hasDefineType(IndexedTWrap<typename T::TypeDesc, 0>*);
+			template<typename T>
+			static IndexedTWrap<T, 0> hasDefineType(...);
+		};
 
-	struct _GetClass_TypeOrTHelper
-	{
 		template<typename T>
-		static IndexedTWrap<typename T::TypeDesc, 1>     _hasDefineType(IndexedTWrap<typename T::TypeDesc, 0>*);
-		template<typename T>
-		static IndexedTWrap<T, 0> _hasDefineType(...);
-	};
-
-	template<typename T>
-	struct GetClass_TypeOrT  //获取T::type类型
-	{
-		typedef decltype(_GetClass_TypeOrTHelper::_hasDefineType<T>(0)) wraptype;
-		enum { value = wraptype::Index };
-		typedef typename wraptype::type type;
-		int view = value;
-	};
+		struct GetClass_TypeOrT
+		{
+			typedef decltype(_GetClass_TypeOrTHelper::hasDefineType<T>(0)) wraptype;
+			enum { value = wraptype::Index };
+			typedef typename wraptype::type type;
+		};
+	}
 
 	template <typename T>
 	class has_TypeName
@@ -141,13 +126,11 @@ namespace zhihe
 		//typedef typename T::TypeDesc  Desc;
 		//template <typename C> static one test(decltype(&T::rtti));
 		//template <typename C> static two test(...);
-
 	public:
 		enum {
-			value = GetClass_TypeOrT<T>::value
+			value = internal::GetClass_TypeOrT<T>::value
 		};
 	};
-
 
 	struct StarMarker
 	{
@@ -161,7 +144,6 @@ namespace zhihe
 
 	namespace internal
 	{
-
 		template <typename T>
 		class TStruct
 		{
@@ -207,12 +189,6 @@ namespace zhihe
 
 	template <typename T>
 	Propertys&  ImpStaticReflection() { return ImpReflect<T>::props; }
-
-	//template <typename T>
-	//Propertys& GetStaticReflection()
-	//{
-	//	return ImpStaticReflection<T>();
-	//}
 	template <typename T>
 	zhihe::Type::Rtti TClass<T>::rtti = { &zhihe::BaseTypes::vNone,TClass<T>::TypeDesc::TypeName.Name,TClass<T>::TypeDesc::TypeName.Hash,TClass<T>::TypeIndex,&ImpStaticReflection<T> };
 }
@@ -220,13 +196,6 @@ namespace zhihe
 #include "./property.h"
 namespace zhihe {
 	struct Struct;
-	//struct Reflective : public Memory
-	//{
-	//public:
-	//	static Propertys reflection;
-	//	static Propertys& GetStaticReflection() { return reflection; }
-	//};
-	//Propertys Reflective::reflection(Type::vNone);
 
 	Type::Rtti None::rtti = { &Type::BaseTypes::vNone,None::TypeDesc::TypeName.Name,None::TypeDesc::TypeName.Hash,None::TypeIndex,&ImpStaticReflection<None> };
 
@@ -285,7 +254,6 @@ namespace zhihe {
 	class TRtti2 : public Memory
 	{
 	public:
-		//constexpr static auto TypeName = CN::TypeName;
 		typedef typename CN::TypeDesc TypeDesc;
 		static Type::BaseTypes _baseProperty[3];
 		static Type::Rtti rtti;

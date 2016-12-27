@@ -3,7 +3,6 @@
 #include "../hpp/reflection.h"
 namespace ts
 {
-
 	void display(Type type,Struct* str,int depth) {
 		cachar* cls = type.getName();
 

@@ -209,9 +209,9 @@ namespace ts {
 		printf(rstr); printf("\r\n");
 		base.tell();
 		f64 ret;
-		printf("refraction read _f64:%f  \r\n", ret, type.getPropertys().getField("_f64").get<f64>(&base,ret));
-		printf("refraction write _f64:123\r\n", ret, type.getPropertys().getField("_f64").set<f64>(&base,123));
-		printf("refraction read _f64:%f  \r\n", ret, type.getPropertys().getField("_f64").get<f64>(&base,ret));
+		printf("read _f64:%f  \r\n", ret, type.getPropertys().getField("_f64").get<f64>(&base,ret));
+		printf("write _f64:123\r\n", ret, type.getPropertys().getField("_f64").set<f64>(&base,123));
+		printf("read _f64:%f  \r\n", ret, type.getPropertys().getField("_f64").get<f64>(&base,ret));
 		f64* p64 = type.getPropertys().getField("_f64").ref<f64>(&base);
 		if (p64) {
 			*p64 = 1234567;

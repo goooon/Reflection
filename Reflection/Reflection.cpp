@@ -1,7 +1,6 @@
 // Propertys.cpp : 定义控制台应用程序的入口点。
 //
 
-//#include "stdafx.h"
 #include <string.h>
 #include <stdio.h>
 #include "./hpp/reflection.h"
@@ -12,7 +11,7 @@ using namespace zhihe;
 #include "./test/tmplt.h"
 using namespace ts;
 #include <iostream>
-//241.
+
 int main()
 {
 	ts::testStruct();

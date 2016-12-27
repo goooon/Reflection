@@ -27,7 +27,6 @@ namespace zhihe
 		const char* desc = 0;
 		PropertyDesc* props = 0;
 	};
-#define INHERIT_TYPE_OFFSET(D,B) (int)(D*)(B*)1 - (int)(B*)1
 	struct Fields : public Property
 	{
 	private:
@@ -96,21 +95,15 @@ namespace zhihe
 		}
 		template <typename T>T*   ref(Struct* c)const
 		{
+			Type outtype = TClass<T>::type;
 			if (setdata != getdata) {
-				typedef T&(Struct::*AttrPtr)(void);
-				Type itype = TClass<T>::type;
-				if (itype != type)
-				{
-					LOG_E("%s != %s", type.getName(), itype.getName());
-				}
+				LOG_E("it's a function attribute,not supported refference");
 				return nullptr;
 			}
 			else {
-				Type outtype = TClass<T>::type;
 				if (outtype != type &&
 					outtype.getTypeId() != type.getTypeId() &&
-					!type.isKindOf(outtype))
-				{
+					!type.isKindOf(outtype)){
 					LOG_E("%s casting to %s", type.getName(), outtype.getName());
 				}
 				typedef T(Struct::*TStructData);
@@ -119,12 +112,14 @@ namespace zhihe
 		}
 		template <typename T,typename I>b32  get(const Struct* c,I& t)const
 		{
+			Type outtype = TClass<T>::type;
 			if (setdata != getdata) {
 				typedef T(Struct::*AttrPtr)(void);
-				Type itype = TClass<T>::type;
-				if (itype != type)
+				if (outtype != type &&
+					outtype.getTypeId() != type.getTypeId() &&
+					!type.isKindOf(outtype))
 				{
-					LOG_E("%s != %s", type.getName(), itype.getName());
+					LOG_E("%s casting to %s", type.getName(), outtype.getName());
 					return vFalse;
 				}
 				AttrPtr p = (AttrPtr)structget;
@@ -132,7 +127,6 @@ namespace zhihe
 				return vTrue;
 			}
 			else {
-				Type outtype = TClass<T>::type;
 				if (outtype != type &&
 					outtype.getTypeId() != type.getTypeId() &&
 					!type.isKindOf(outtype))
@@ -346,6 +340,9 @@ namespace zhihe
 		s32  offset;
 		Type type;
 		const Methods* prop;
+		operator bool() {
+			return type;
+		}
 		Method& operator =(const Method & that)
 		{
 			this->offset = that.offset;
