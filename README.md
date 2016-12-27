@@ -15,8 +15,31 @@ There are no dependencies in the runtime so building is pretty straightforward.
 You will find some demo in test directory
 
 ### Limits
-Enum not supported, virtual inheritance of class not supported
+Enum not supported, virtual inheritance of class not supported,currently int only support no more than three base classes
 
 
 ### Usage
-See ./test
+
+        Type type;
+	const char* name;
+	hash64 hash;
+	TypeId typeId;
+	BaseTypes* typeprops;
+	Propertys* propertys;
+
+	type = TClass<int>::type;
+	hash = type.getHash();
+	name = type.getName();
+	typeId = type.getTypeId();
+	typeprops = type.getBaseTypes();
+	propertys = &type.getPropertys();
+	int* a = (int*)type.newStruct();
+
+	type = TClass<int*>::type;
+	hash = type.getHash();
+	name = type.getName();
+	typeId = type.getTypeId();
+	typeprops = type.getBaseTypes();
+	propertys = &type.getPropertys();
+
+See more from ./test

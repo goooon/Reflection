@@ -192,25 +192,6 @@ namespace zhihe
 		protected: typedef C self; \
 		public: typedef zhihe::internal::typedesc6<zh_str2type(#C), zh_str2type("<"), zh_str2type(zhihe::TClass<T1>::TypeDesc::TypeName.Name), zh_str2type(","), zh_str2type(zhihe::TClass<T2>::TypeDesc::TypeName.Name),zh_str2type(">")> TypeDesc;
 
-#define DECL_OBJECT3(B1,B2,B3)         \
-    public:    typedef B1 base;                    \
-    public:    typedef B1::RootType RootType;          \
-	public:    typedef zhihe::TRtti3<self,B1,B2,B3> RunTime;			  \
-	public:    static  zhihe::Type type() { return RunTime::rtti; }       \
-    DECL_RTTI_CORE(self);      \
-    xStaticAssert(IS_D_FROM_B_STRICT(self,B1),class_not_derived_from_##B1); \
-    xStaticAssert(IS_D_FROM_B_STRICT(self,B2),class_not_derived_from_##B2); \
-    xStaticAssert(IS_D_FROM_B_STRICT(self,B3),class_not_derived_from_##B3);
-
-#define DECL_OBJECT4(B1,B2,B3,B4)     \
-    public:    typedef B1 base;                    \
-    xStaticAssert(IS_D_FROM_B_STRICT(self,B1),class_not_derived_from_##B1); \
-    xStaticAssert(IS_D_FROM_B_STRICT(self,B2),class_not_derived_from_##B2); \
-    xStaticAssert(IS_D_FROM_B_STRICT(self,B3),class_not_derived_from_##B3); \
-    xStaticAssert(IS_D_FROM_B_STRICT(self,B4),class_not_derived_from_##B4); \
-    DECL_RTTI_CORE(TypeName.Name,TypeName.Hash,B1,B2,B3,B4,0);       \
-    DECL_DERIVED(self);
-
 #define DECL_OBJECT5(B1,B2,B3,B4,B5)    \
     public:    typedef B1 base;                    \
     xStaticAssert(IS_D_FROM_B_STRICT(self,B1),class_not_derived_from_##B1); \
@@ -278,6 +259,27 @@ namespace zhihe
 	public:    static  zhihe::Type type() { return RunTime::rtti; } \
     xStaticAssert(IS_D_FROM_B_STRICT(self,B1),class_not_derived_from_##B1); \
     xStaticAssert(IS_D_FROM_B_STRICT(self,B2),class_not_derived_from_##B2);
+
+#define DECL_OBJECT3(B1,B2,B3)         \
+    public:    typedef B1 base;                    \
+    public:    typedef B1::RootType RootType;          \
+	public:    typedef zhihe::TRtti3<self,B1,B2,B3> RunTime;			  \
+	public:    static  zhihe::Type type() { return RunTime::rtti; }       \
+    DECL_RTTI_CORE(self);      \
+    xStaticAssert(IS_D_FROM_B_STRICT(self,B1),class_not_derived_from_##B1); \
+    xStaticAssert(IS_D_FROM_B_STRICT(self,B2),class_not_derived_from_##B2); \
+    xStaticAssert(IS_D_FROM_B_STRICT(self,B3),class_not_derived_from_##B3);
+
+#define DECL_OBJECT4(B1,B2,B3,B4)     \
+    public:    typedef B1 base;                    \
+	public:    typedef B1::RootType RootType;          \
+	public:    typedef zhihe::TRtti4<self,B1,B2,B3,B4> RunTime;			  \
+	public:    static  zhihe::Type type() { return RunTime::rtti; }       \
+    DECL_RTTI_CORE(self);      \
+    xStaticAssert(IS_D_FROM_B_STRICT(self,B1),class_not_derived_from_##B1); \
+    xStaticAssert(IS_D_FROM_B_STRICT(self,B2),class_not_derived_from_##B2); \
+    xStaticAssert(IS_D_FROM_B_STRICT(self,B3),class_not_derived_from_##B3); \
+    xStaticAssert(IS_D_FROM_B_STRICT(self,B4),class_not_derived_from_##B4); 
 
 #define DECL_REGISTER(D)    \
     public:                 \
