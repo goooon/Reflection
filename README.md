@@ -21,8 +21,8 @@ virtual inheritance of class not supported,currently int only support no more th
 ### Usage
 #### how to use
   
-          namespace ts{
-	        DECL_ENUM(Color, RED, GREEN, BLUE, YELLOW, PINK, DARK, WHITE);
+	namespace ts{
+	  DECL_ENUM(Color, RED, GREEN, BLUE, YELLOW, PINK, DARK, WHITE);
 		template <typename T>
 		struct TBase : public Struct
 		{
@@ -35,7 +35,7 @@ virtual inheritance of class not supported,currently int only support no more th
 		};
 	}
 
-        Type type = Type::vNone;
+	Type type = Type::vNone;
 	const char* name;
 	hash64 hash;
 	TypeId typeId;
