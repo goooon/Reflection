@@ -20,19 +20,17 @@ virtual inheritance of class not supported,currently int only support no more th
 
 ### Usage
 #### how to define
-
-  template <typename T>
+DECL_ENUM(Color, RED, GREEN, BLUE, YELLOW, PINK, DARK, WHITE);
+	template <typename T>
 	struct TBase : public Struct
 	{
-		DECL_STRUCT(TPLT(TBase, T), Base);
-		DECL_ENUM(Color, RED,GREEN,BLUE,YELLOW,PINK,DARK,WHITE);
+		DECL_STRUCT(TPLT(TBase, T), Struct);
 		u8 _u8_tbase;
-    Color color;
+		Color color;
 		void set_u8_tbase(u8 i) { _u8_tbase = i; }
 		u8   get_u8_tbase()const { return _u8_tbase; }
-		DECL_PROPERTY(TBase, FIELDS(_u8_tbase,_flag,color), METHODS(set_u8_tbase, get_u8_tbase));
+		DECL_PROPERTY(TBase, FIELDS(_u8_tbase, _flag, color), METHODS(set_u8_tbase, get_u8_tbase));
 	};
-	
 #### how to use
 
   Type type;
