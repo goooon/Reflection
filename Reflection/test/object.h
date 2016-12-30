@@ -16,6 +16,10 @@ namespace zhihe {
 class DerObject : public Object
 {
 	DECL_OBJECT(TPLT(DerObject), Object);
+	struct InnerStruct : public Struct
+	{
+		DECL_ENUM(EFlag, E0, E1, E2, E3, E4);
+	};
 public:
 	int intValue1;
 	int intValue2;
@@ -24,34 +28,14 @@ public:
 	u8  u8Value1;
 	u8  u8Value2;
 	s16 s16Value1;
+	InnerStruct::EFlag eflag;
 	int getint()const { return intValue2; }
 	virtual void setint(int i) { intValue2 = i; }
 	virtual int getJ() { return 0; }
 	virtual void setJ(int j) { return; }
 	virtual float floatf(float f) { return 0; }
 public:
-	static Propertys& GetClassProperty(Propertys& prop) {
-		typedef DerObject self;
-		const static Fields ap[] = {
-			{ &self::intValue1,"intValue1" },
-			{ &self::intValue2,"intValue2" },
-			{ &self::u32Value1,"u32Value1" },
-			{ &self::u32Value2,"u32Value2" },
-			{ &self::u8Value1,"u8Value1" },
-			{ &self::u8Value2,"u8Value2" },
-			{ &self::s16Value1,"s16Value1" },
-			{ &self::getint,&self::setint,"intattr" },
-			Fields() };
-		const static Methods fp[] = {
-			{ &self::setint,"setint" },
-			{ &self::getint,"getint" },
-			{ &self::getJ,"getJ" },
-			{ &self::setJ,"setJ" },
-			{ &self::floatf,"floatf" },
-			Methods() };
-		prop.setPropertys(type, ap, fp);
-		return prop;
-	}
+	DECL_PROPERTY(DerObject, FIELDS(eflag,intValue1, intValue2, u32Value1, u32Value2, u8Value1, u8Value2, s16Value1), METHODS(setint, getint, setJ, getJ, floatf));
 };
 
 
@@ -65,7 +49,7 @@ class SubClass : public DerObject,public ts::TBase<DerObject>
 	virtual int getJ() { return j; }
 	virtual void setJ(int j) { this->j = j; return; }
 	virtual float floatf(float f) { this->f = f; return f; }
-	static Propertys& GetClassProperty(Propertys& prop) { return prop; }
+	DECL_PROPERTY(SubClass, FIELDS(), METHODS());
 };
 
 Propertys& ImpSubObjectReflection()
@@ -100,12 +84,16 @@ namespace ts {
 		Method fprop = obj->getType().getPropertys().getMehod("setJ");
 		fprop.invoke<void, int>(obj, 0x3456);
 		fprop = obj->getType().getPropertys().getMehod("getJ");
-		int getJ = fprop.invoke<int>(obj);
-		LOG_A(0x3456 == getJ, "setJ or getJ failed %d", getJ);
+		if (fprop) {
+			int getJ = fprop.invoke<int>(obj);
+			LOG_A(0x3456 == getJ, "setJ or getJ failed %d", getJ);
+		}
 
 		fprop = obj->getType().getPropertys().getMehod("floatf");
-		float getf = fprop.invoke<float>(obj, 1.02f);
-		LOG_A(getf == 1.02f, "floatf failed %f", getf);
+		if (fprop) {
+			float getf = fprop.invoke<float>(obj, 1.02f);
+			LOG_A(getf == 1.02f, "floatf failed %f", getf);
+		}
 		del_me obj;
 	}
 }

@@ -141,26 +141,57 @@ namespace zhihe
 	{
 		typedef internal::typedesc1<zh_str2type("?")> TypeDesc;
 	};
-
+	struct EnumDesc {};
 	namespace internal
 	{
-		template <typename T>
+		template <typename T,bool>
 		class TStruct
 		{
 		public:
 			typedef typename Type_Select<has_TypeName<T>::value, T, UnknownMarker>::Result::TypeDesc TypeDesc;
-			static Type type()
-			{
+			static Type type(){
+				return rtti;
+			}
+			static Type::Rtti rtti;
+			const static TypeId TypeIndex = TypeId::raw;
+		};
+		//template <typename T,bool>
+		//Type::Rtti TStruct<T,false>::rtti = { &BaseTypes::vNone, TStruct<T,false>::TypeDesc::TypeName.Name, TStruct<T,false>::TypeDesc::TypeName.Hash,TStruct<T,false>::TypeIndex };
+
+		template <typename T>
+		class TStruct<T, false>
+		{
+		public:
+			typedef typename Type_Select<has_TypeName<T>::value, T, UnknownMarker>::Result::TypeDesc TypeDesc;
+			static Type type() {
 				return rtti;
 			}
 			static Type::Rtti rtti;
 			const static TypeId TypeIndex = TypeId::raw;
 		};
 		template <typename T>
-		Type::Rtti TStruct<T>::rtti = { &BaseTypes::vNone, TStruct<T>::TypeDesc::TypeName.Name, TStruct<T>::TypeDesc::TypeName.Hash,TStruct<T>::TypeIndex };
+		Type::Rtti TStruct<T, false>::rtti = { &BaseTypes::vNone, TStruct<T,false>::TypeDesc::TypeName.Name, TStruct<T,false>::TypeDesc::TypeName.Hash,TStruct<T,false>::TypeIndex };
+
+		template <typename T>
+		class TStruct<T,true>
+		{
+		public:
+			typedef decltype(T() << Memory()) SType;
+			typedef typename SType::TypeDesc TypeDesc;
+			static Type type() {
+				return rtti;
+			}
+			static BaseTypes props[2];
+			static Type::Rtti rtti;
+			const static TypeId TypeIndex = TypeId::enu;
+		};
+		template <typename T>
+		zhihe::BaseTypes TStruct<T, true>::props[2] = { {&TClass<u32>::rtti,0},zhihe::BaseTypes::vNone };
+		template <typename T>
+		Type::Rtti TStruct<T, true>::rtti = { TStruct<T, true>::props, TStruct<T,true>::TypeDesc::TypeName.Name, TStruct<T,true>::TypeDesc::TypeName.Hash,TStruct<T,true>::TypeIndex,&TStruct<T,true>::SType::GetStaticReflection };
 
 		template <typename T, bool> struct TTp {
-			typedef typename Type_Select<std::is_base_of<Struct,T>::value, T, TStruct<T>>::Result Type;
+			typedef typename Type_Select<std::is_base_of<Struct,T>::value, T, TStruct<T,std::is_enum<T>::value>>::Result Type;
 			typedef T raw_type;
 			typedef T obj_type;
 		};
@@ -289,6 +320,7 @@ namespace zhihe {
 	template <typename CN, typename B1, typename B2, typename B3, typename B4>
 	Type::Rtti TRtti4<CN, B1, B2, B3, B4>::rtti = { TRtti4<CN, B1,B2,B3,B4>::_baseProperty,CN::TypeDesc::TypeName.Name,CN::TypeDesc::TypeName.Hash,CN::TypeIndex,&CN::GetStaticReflection,CN::NewStruct,CN::NewObject };
 
+	
 	struct Struct : public Memory
 	{
 		DECL_STRUCT(TPLT(Struct));
@@ -366,5 +398,46 @@ namespace zhihe {
 		}
 		return (obj->*((typename F::RawMemberFunc)prop.func))(std::forward<Args>(args)...);
 	}
+//////////////////////////////////////////////////////////////////////////
+#define PRIVITE_PROPERTY_OP(NAME, I, REC, RES) REC RES
+#define PRIVITE_PROPERTY_VASSIGN(NAME, X, I) {&NAME::X,QUOTE(X)},
+#define PRIVATE_PROPERTY0(...) P99_FOR(self, COUNT_ASSERT_VAR_ARGS(__VA_ARGS__), PRIVITE_PROPERTY_OP, PRIVITE_PROPERTY_VASSIGN, __VA_ARGS__)
+#define PRIVATE_PROPERTY1(...) 
+#define PRIVATE_PROPERTY_PASTE(N,...)  P99_PASTE2(PRIVATE_PROPERTY,N)(__VA_ARGS__)
+#define DECL_METHODS(...) PRIVATE_PROPERTY_PASTE(P99_IS_EMPTY(__VA_ARGS__),__VA_ARGS__)
+#define DECL_FIELDS(...)  PRIVATE_PROPERTY_PASTE(P99_IS_EMPTY(__VA_ARGS__),__VA_ARGS__)
+#define DECL_PROPERTY(NAME, F, M) static zhihe::Propertys& GetClassProperty(zhihe::Propertys& prop) {typedef NAME self;const static zhihe::Fields f[] = { DECL_##F zhihe::Fields() };; const static zhihe::Methods m[] = { DECL_##M zhihe::Methods() };prop.setPropertys(type, f, m);return prop;}
+//////////////////////////////////////////////////////////////////////////
+#define PRIVITE_ENUM_RTTI_OP(NAME, I, REC, RES) REC,RES
+#define PRIVITE_ENUM_RTTI_VASSIGN(NAME, X, I) {(u32)NAME::X,QUOTE(X)}
+
+#define PRIVITE_ENUM_OP(NAME, I, REC, RES) REC,RES
+#define PRIVITE_ENUM_VASSIGN(NAME, X, I) X
+
+#define DECL_ENUM(NAME, ...)  \
+	struct rtti_##NAME : public zhihe::Struct {  \
+		enum class NAME { P99_FOR(NAME, COUNT_ASSERT_VAR_ARGS(__VA_ARGS__), PRIVITE_ENUM_OP, PRIVITE_ENUM_VASSIGN, __VA_ARGS__) };\
+		struct FlagDesc : zhihe::Struct  \
+		{   \
+			typedef internal::typedesc1<zh_str2type(QUOTE(NAME))> TypeDesc;  \
+			friend     Propertys& zhihe::ImpStaticReflection<NAME>();   \
+		    public:    static Propertys& GetStaticReflection() { return GetClassProperty(zhihe::ImpStaticReflection<NAME>()); }   \
+		    private:   static Propertys& GetClassProperty(Propertys& prop) {   \
+			const static Methods fp[] = {   \
+				{ &FlagDesc::GetEnums,"GetEnums" },Methods() };   \
+				prop.setPropertys(prop.getClassType(), fp);   \
+				return prop;   \
+			}   \
+			Enum GetEnums() {   \
+				const static Enum::Item ei[] = { P99_FOR(NAME,COUNT_ASSERT_VAR_ARGS(__VA_ARGS__), PRIVITE_ENUM_RTTI_OP, PRIVITE_ENUM_RTTI_VASSIGN, __VA_ARGS__) }; \
+				return{ COUNT_ASSERT_VAR_ARGS(__VA_ARGS__),&ei[0] }; \
+			} \
+		}; \
+			friend FlagDesc operator<<(const NAME &o, const Memory &h) \
+			{ \
+					return FlagDesc(); \
+			} \
+		};	\
+		typedef rtti_##NAME::NAME NAME; 
 }
 #endif

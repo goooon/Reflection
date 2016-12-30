@@ -51,6 +51,13 @@ namespace ts
 				attr++;
 				continue;
 				break;
+			case TypeId::enu:
+				attr->set(str, attr->getType().getPropertys().getEnums()[2].flag);
+				attr->get<u32>(str, value);
+				LOG_D(depth, "%s[0x%x].%s == %s",cls,str,name, attr->getType().getPropertys().getEnums()[(int)value].name);
+				attr++;
+				continue;
+				break;
 			case TypeId::ptr:
 				if (attr->getType() == TClass<f32*>::type) {
 					attr->set(str, (f32*)0x123890);

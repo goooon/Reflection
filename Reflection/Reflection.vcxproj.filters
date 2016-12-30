@@ -19,6 +19,9 @@
     <Filter Include="test">
       <UniqueIdentifier>{3f54dd8d-dd94-465a-ab52-aaec828bef62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="p99">
+      <UniqueIdentifier>{d6f0bfe2-acb7-4b0f-9505-2e576596c68e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -80,6 +83,39 @@
     </ClInclude>
     <ClInclude Include="test\display.h">
       <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\p99_vs\p99_args.h">
+      <Filter>p99</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\p99_vs\p99_c99.h">
+      <Filter>p99</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\p99_vs\p99_compiler.h">
+      <Filter>p99</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\p99_vs\p99_for.h">
+      <Filter>p99</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\p99_vs\p99_generated.h">
+      <Filter>p99</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\p99_vs\p99_id.h">
+      <Filter>p99</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\p99_vs\p99_libc.h">
+      <Filter>p99</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\p99_vs\p99_list.h">
+      <Filter>p99</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\p99_vs\p99_logical.h">
+      <Filter>p99</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\p99_vs\p99_paste.h">
+      <Filter>p99</Filter>
+    </ClInclude>
+    <ClInclude Include="hpp\p99_vs\p99_type.h">
+      <Filter>p99</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

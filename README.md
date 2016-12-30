@@ -15,11 +15,24 @@ There are no dependencies in the runtime so building is pretty straightforward.
 You will find some demo in test directory
 
 ### Limits
-Enum not supported, virtual inheritance of class not supported,currently int only support no more than three base classes
+virtual inheritance of class not supported,currently int only support no more than three base classes
 
 
 ### Usage
-
+1.how to define
+        template <typename T>
+	struct TBase : public Struct
+	{
+		DECL_STRUCT(TPLT(TBase, T), Base);
+		u8 _u8_tbase;
+                Color color;
+		fff::Flag _flag = fff::Flag::Open;
+		void set_u8_tbase(u8 i) { _u8_tbase = i; }
+		u8   get_u8_tbase()const { return _u8_tbase; }
+		DECL_ENUM(Color, RED,GREEN,BLUE,YELLOW,PINK,DARK,WHITE);
+		DECL_PROPERTY(TBase, FIELDS(_u8_tbase,_flag,color), METHODS(set_u8_tbase, get_u8_tbase));
+	};
+2.other useage
         Type type;
 	const char* name;
 	hash64 hash;
@@ -27,7 +40,7 @@ Enum not supported, virtual inheritance of class not supported,currently int onl
 	BaseTypes* typeprops;
 	Propertys* propertys;
 
-	type = TClass<int>::type;
+	type = TClass<TBase>::type;
 	hash = type.getHash();
 	name = type.getName();
 	typeId = type.getTypeId();

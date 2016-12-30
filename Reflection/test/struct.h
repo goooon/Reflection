@@ -2,73 +2,30 @@
 #define GUARD_struct_h__
 #include "../hpp/reflection.h"
 #include "./display.h"
+
 using namespace zhihe;
+
 namespace ts {
 	struct RawBase;
 	struct Base;
-	enum Flag
-	{
-		Open,
-		Close,
-		Invalid
-	};
+	DECL_ENUM(Flag, Open, Close, Invalid, Other);
+	namespace fff {
+		DECL_ENUM(Flag, Open, Close, Other);
+	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-template <typename CN, typename TN>
-class RawEnum : public Memory
-{
-public:
-	typedef TN TypeDesc;
-	static Type::Rtti rtti;
-};
-
-//////////////////////////////////////////////////////////////////////////
-//template <>struct TClass<T> 
-//{ 
-//	typedef RawEnum<T, TypeDesc> RunTime;
-//	const static TypeId TypeIndex = TypeId::enu; 
-//	EnumItem* get() {
-//		const static EnumItem ei[] = {
-//			{ T::Open,"Open" },
-//			{ T::Close,"Close" }
-//		};
-//		return ei;
-//	}
-//	static Propertys&  GetStaticReflection() { 
-//		Propertys& prop = ImpReflect<T>::props;
-//		const static Fields fp[] = 
-//		{ 
-//			{ &TClass<T>::get, "Items", 0 },
-//			Fields::vNone
-//		}; 
-//		prop.setPropertys(type, fp);
-//		return prop;
-//	}
-//	static zhihe::Type type() {
-//			return RunTime::rtti; 
-//	} 
-//};
-//template <typename CN, typename TN>
-//Type::Rtti RawEnum<CN, TN>::rtti = { &zhihe::BaseTypes::vNone,RawEnum<CN,TN>::TypeDesc::TypeName.Name,RawEnum<CN,TN>::TypeDesc::TypeName.Hash,zhihe::TypeId::enu,TClass<T>::GetStaticReflection,0,0 };
-
-struct EnumItem
-{
-	u32     id;
-	cachar* name;
-};
 
 namespace zhihe {
-
 	template <>Propertys& ImpStaticReflection<ts::RawBase>();
 	Propertys& ImpStaticBaseReflection();
-	template <>Propertys& ImpStaticReflection<ts::Base>() {
-		return ImpStaticBaseReflection();
-	};
+	template <>Propertys& ImpStaticReflection<ts::Base>() { return zhihe::ImpStaticBaseReflection(); };
 }
+
 namespace ts {
 	struct RawBase : public Struct
 	{
+		DECL_ENUM(ERawBase, RED,GREEN,BLUE,YELLOW,PINK,DARK,WHITE);
+
 		char* _char;
 		u32 _u32;
 		f32* _pf32;
@@ -78,7 +35,7 @@ namespace ts {
 		u8  _u8;
 		f32 _f32;
 		f64 _f64;
-		Flag _flag;
+		ERawBase _enum = ERawBase::PINK;
 		void setU32Attr(u32 i) { _u32 = i; }
 		u32  getU32Attr()const { return _u32; }
 		char* setget(f64 v64, f32 v32, char* str, u8 vu8) {
@@ -96,7 +53,6 @@ namespace ts {
 
 	struct Base : public Struct
 	{
-		//DECL_STRUCT(TPLT(Base), Struct);
 		char* _char;
 		u32 _u32;
 		f32* _pf32;
@@ -126,21 +82,12 @@ namespace ts {
 	{
 		DECL_STRUCT(TPLT(TBase, T), Base);
 		u8 _u8_tbase;
+		fff::Flag _flag = fff::Flag::Open;
 		void set_u8_tbase(u8 i) { _u8_tbase = i; }
 		u8   get_u8_tbase()const { return _u8_tbase; }
-		static Propertys& GetClassProperty(Propertys& prop) {
-			typedef TBase self;
-			const static Fields ap[] = {
-				{ &self::get_u8_tbase,&self::set_u8_tbase,"u8_tbase" },
-				Fields() };
-			const static Methods fp[] = {
-				Methods() };
-			prop.setPropertys(type,ap, fp);
-			return prop;
-		}
+		DECL_PROPERTY(TBase, FIELDS(_u8_tbase,_flag), METHODS(set_u8_tbase, get_u8_tbase));
 	};
 }
-
 
 namespace zhihe
 {
@@ -155,11 +102,11 @@ namespace zhihe
 			{ &self::_char,"_char" },
 			{ &self::_u32,"_u32" },
 			{ &self::_f64,"_f64" },
-			{ &self::_flag,"_flag" },
 			{ &self::_f32,"_f32" },
 			{ &self::_s32,"_s32" },
 			{ &self::_pf32,"_pf32" },
 			{ &self::_u16,"_u16" },
+			{ &self::_enum ,"_enum"},
 			{ &self::_u8,"_u8"},
 			{ &self::getU32Attr,&self::setU32Attr,"strintattr" },
 			Fields() };
@@ -197,7 +144,6 @@ namespace zhihe
 namespace ts {
 	void testStruct()
 	{
-
 		Base base;
 		Type type = zhihe::TClass<ts::Base>::type;
 		printf("test Struct:size %d\r\n", sizeof(Struct));

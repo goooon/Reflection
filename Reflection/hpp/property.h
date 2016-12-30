@@ -128,7 +128,7 @@ namespace zhihe
 			}
 			else {
 				if (outtype != type &&
-					outtype.getTypeId() != type.getTypeId() &&
+					!(0x00FF0000 & (u32)outtype.getTypeId() & (u32)type.getTypeId()) &&
 					!type.isKindOf(outtype))
 				{
 					LOG_E("%s casting to %s", type.getName(), outtype.getName());
@@ -164,7 +164,7 @@ namespace zhihe
 			else {
 				Type from = TClass<T>::type;
 				if (from != type &&
-					from.getTypeId() != type.getTypeId() &&
+					!(0x00FF0000 & (u32)from.getTypeId() &  (u32)type.getTypeId()) &&
 					!from.isKindOf(type))
 				{
 					LOG_E("%s can't cast to %s", from.getName(), type.getName());
@@ -477,7 +477,16 @@ namespace zhihe
 		}
 		const Fields*  getFields()const { return attrProps; }
 		const Methods* getMehods()const { return funcProps; }
-		Type  getClassType()const { return clstype; }
+		Type   getClassType()const { return clstype; }
+		Enum   getEnums()const {
+			if (clstype.getTypeId() == TypeId::enu) {
+				Method method = getMehod("GetEnums");
+				if (method) {
+					return method.invoke<Enum>((Struct *)0);
+				}
+			}
+			return{ 0,nullptr };
+		}
 	private:
 		Type clstype;
 		u32 attrCount;

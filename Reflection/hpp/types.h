@@ -57,25 +57,31 @@ namespace zhihe
 	typedef u32             color;
 
 	enum class TypeId {
-		v, boolean,
-		s8,  u8,
-		s16, u16,
-		s32, u32,
-		s64, u64,
-		f32,
-		f64,
-		astr,
-		wstr,
-		ptr,
-		arr,
-		ref,
-		raw,
-		obj,
-		func,
-		enu,
-		cst,
-		type,
-		count
+		//type       conv mask    size    ...
+		v        = 0x00000000,
+		boolean  = 0x01010100,
+		s8       = 0x02010100,
+		u8		 = 0x03010100,
+		s16		 = 0x04030200,
+		u16		 = 0x05030200,
+		s32      = 0x060F0400,
+		u32      = 0x070F0400,
+		s64      = 0x08FF0800,
+		u64		 = 0x09FF0800,
+		f32		 = 0x0A0F0400,
+		f64		 = 0x0BFF0800,
+		astr	 = 0x0CFF0000,
+		wstr	 = 0x0DFF0000,
+		arr		 = 0x0F000000,
+		ptr		 = 0x0EFF0000,
+		ref		 = 0x10000000,
+		func	 = 0x13FF0000,
+		raw		 = 0x1100FF00,
+		obj		 = 0x12FFFF00,
+		enu		 = 0x140FFF00,
+		cst		 = 0x15000000,
+		type	 = 0x16000000,
+		count = 23
 	};
 
 #define vNull          (0)
