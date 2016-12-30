@@ -19,7 +19,8 @@ virtual inheritance of class not supported,currently int only support no more th
 
 
 ### Usage
-1.how to define
+#### how to define
+
         template <typename T>
 	struct TBase : public Struct
 	{
@@ -32,7 +33,9 @@ virtual inheritance of class not supported,currently int only support no more th
 		DECL_ENUM(Color, RED,GREEN,BLUE,YELLOW,PINK,DARK,WHITE);
 		DECL_PROPERTY(TBase, FIELDS(_u8_tbase,_flag,color), METHODS(set_u8_tbase, get_u8_tbase));
 	};
-2.other useage
+
+#### how to use
+
         Type type;
 	const char* name;
 	hash64 hash;
