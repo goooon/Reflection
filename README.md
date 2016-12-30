@@ -19,8 +19,8 @@ virtual inheritance of class not supported,currently int only support no more th
 
 
 ### Usage
-#### how to define
-DECL_ENUM(Color, RED, GREEN, BLUE, YELLOW, PINK, DARK, WHITE);
+#### how to use
+  DECL_ENUM(Color, RED, GREEN, BLUE, YELLOW, PINK, DARK, WHITE);
 	template <typename T>
 	struct TBase : public Struct
 	{
@@ -31,8 +31,8 @@ DECL_ENUM(Color, RED, GREEN, BLUE, YELLOW, PINK, DARK, WHITE);
 		u8   get_u8_tbase()const { return _u8_tbase; }
 		DECL_PROPERTY(TBase, FIELDS(_u8_tbase, _flag, color), METHODS(set_u8_tbase, get_u8_tbase));
 	};
-#### how to use
-
+	
+	
   Type type;
 	const char* name;
 	hash64 hash;
