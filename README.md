@@ -48,7 +48,6 @@ virtual inheritance of class not supported,currently int only support no more th
 	typeId = type.getTypeId();
 	typeprops = type.getBaseTypes();
 	propertys = &type.getPropertys();
-	int* a = (int*)type.newStruct();
 
 	type = TClass<int*>::type;
 	hash = type.getHash();
