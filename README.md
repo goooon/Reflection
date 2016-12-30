@@ -21,7 +21,7 @@ virtual inheritance of class not supported,currently int only support no more th
 ### Usage
 #### how to use
   
-	/* demo */
+	namespace ts{
   DECL_ENUM(Color, RED, GREEN, BLUE, YELLOW, PINK, DARK, WHITE);
 	template <typename T>
 	struct TBase : public Struct
@@ -33,6 +33,7 @@ virtual inheritance of class not supported,currently int only support no more th
 		u8   get_u8_tbase()const { return _u8_tbase; }
 		DECL_PROPERTY(TBase, FIELDS(_u8_tbase, _flag, color), METHODS(set_u8_tbase, get_u8_tbase));
 	};
+	}
 	
 	
   Type type;
@@ -42,7 +43,7 @@ virtual inheritance of class not supported,currently int only support no more th
 	BaseTypes* typeprops;
 	Propertys* propertys;
 	
-	type = TClass<TBase>::type;
+	type = TClass<ts::TBase<int>>::type;
 	hash = type.getHash();
 	name = type.getName();
 	typeId = type.getTypeId();
