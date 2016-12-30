@@ -28,12 +28,11 @@ virtual inheritance of class not supported,currently int only support no more th
 		DECL_ENUM(Color, RED,GREEN,BLUE,YELLOW,PINK,DARK,WHITE);
 		u8 _u8_tbase;
     Color color;
-		fff::Flag _flag = fff::Flag::Open;
 		void set_u8_tbase(u8 i) { _u8_tbase = i; }
 		u8   get_u8_tbase()const { return _u8_tbase; }
 		DECL_PROPERTY(TBase, FIELDS(_u8_tbase,_flag,color), METHODS(set_u8_tbase, get_u8_tbase));
 	};
-
+	
 #### how to use
 
   Type type;
