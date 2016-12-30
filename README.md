@@ -20,6 +20,8 @@ virtual inheritance of class not supported,currently int only support no more th
 
 ### Usage
 #### how to use
+  
+	/* demo */
   DECL_ENUM(Color, RED, GREEN, BLUE, YELLOW, PINK, DARK, WHITE);
 	template <typename T>
 	struct TBase : public Struct
@@ -39,7 +41,7 @@ virtual inheritance of class not supported,currently int only support no more th
 	TypeId typeId;
 	BaseTypes* typeprops;
 	Propertys* propertys;
-
+	
 	type = TClass<TBase>::type;
 	hash = type.getHash();
 	name = type.getName();
