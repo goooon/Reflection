@@ -21,15 +21,8 @@ virtual inheritance of class not supported,currently int only support no more th
 ### Usage
 #### how to use
   
-  Type type = Type::vNone;
-	const char* name;
-	hash64 hash;
-	TypeId typeId;
-	BaseTypes* typeprops;
-	Propertys* propertys;
-	
-namespace ts{
-	  DECL_ENUM(Color, RED, GREEN, BLUE, YELLOW, PINK, DARK, WHITE);
+          namespace ts{
+	        DECL_ENUM(Color, RED, GREEN, BLUE, YELLOW, PINK, DARK, WHITE);
 		template <typename T>
 		struct TBase : public Struct
 		{
@@ -41,6 +34,13 @@ namespace ts{
 			DECL_PROPERTY(TBase, FIELDS(_u8_tbase, _flag, color), METHODS(set_u8_tbase, get_u8_tbase));
 		};
 	}
+
+        Type type = Type::vNone;
+	const char* name;
+	hash64 hash;
+	TypeId typeId;
+	BaseTypes* typeprops;
+	Propertys* propertys;
 	
 	type = TClass<ts::TBase<int>>::type;
 	hash = type.getHash();
