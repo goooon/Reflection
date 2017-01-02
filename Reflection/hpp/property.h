@@ -27,8 +27,65 @@ namespace zhihe
 		const char* desc = 0;
 		PropertyDesc* props = 0;
 	};
+	typedef bool(*ConvFunc)(void* in, void* out);
+	bool fail_all(void*, void*) { return false; }
+	bool b8_b8(void* in,void* out) { *(u8*)out = *(u8*)in; return true; }
+	bool b8_b16(void* in, void* out) { *(u16*)out = *(u8*)in; return true; }
+	bool b8_b32(void* in, void* out) { *(u32*)out = *(u8*)in; return true; }
+	bool b8_b64(void* in, void* out) { *(u64*)out = *(u8*)in; return true; }
+	bool b8_f32(void* in, void* out) { *(f32*)out = *(u8*)in; return true; }
+	bool b8_f64(void* in, void* out) { *(f64*)out = *(u8*)in; return true; }
+
+	bool b16_b8(void* in, void* out) { *(u8*)out = *(u16*)in; return true; }
+	bool b16_b16(void* in, void* out) { *(u16*)out = *(u16*)in; return true; }
+	bool b16_b32(void* in, void* out) { *(u32*)out = *(u16*)in; return true; }
+	bool b16_b64(void* in, void* out) { *(u64*)out = *(u16*)in; return true; }
+	bool b16_f32(void* in, void* out) { *(f32*)out = *(u16*)in; return true; }
+	bool b16_f64(void* in, void* out) { *(f64*)out = *(u16*)in; return true; }
+	
+	bool b32_b8(void* in, void* out) { *(u8*)out = *(u32*)in; return true; }
+	bool b32_b16(void* in, void* out) { *(u16*)out = *(u32*)in; return true; }
+	bool b32_b32(void* in, void* out) { *(u32*)out = *(u32*)in; return true; }
+	bool b32_b64(void* in, void* out) { *(u64*)out = *(u32*)in; return true; }
+	bool b32_f32(void* in, void* out) { *(f32*)out = *(u32*)in; return true; }
+	bool b32_f64(void* in, void* out) { *(f64*)out = *(u32*)in; return true; }
+
+	bool b64_b8(void* in, void* out) { *(u8*)out = *(u64*)in; return true; }
+	bool b64_b16(void* in, void* out) { *(u16*)out = *(u64*)in; return true; }
+	bool b64_b32(void* in, void* out) { *(u32*)out = *(u64*)in; return true; }
+	bool b64_b64(void* in, void* out) { *(u64*)out = *(u64*)in; return true; }
+	bool b64_f32(void* in, void* out) { *(f32*)out = *(u64*)in; return true; }
+	bool b64_f64(void* in, void* out) { *(f64*)out = *(u64*)in; return true; }
+
+	bool f32_b8(void* in, void* out) { *(u8*)out = *(f32*)in; return true; }
+	bool f32_b16(void* in, void* out) { *(u16*)out = *(f32*)in; return true; }
+	bool f32_b32(void* in, void* out) { *(u32*)out = *(f32*)in; return true; }
+	bool f32_b64(void* in, void* out) { *(u64*)out = *(f32*)in; return true; }
+	bool f32_f32(void* in, void* out) { *(f32*)out = *(f32*)in; return true; }
+	bool f32_f64(void* in, void* out) { *(f64*)out = *(f32*)in; return true; }
+
+	bool f64_b8(void* in, void* out) { *(u8*)out = *(f64*)in; return true; }
+	bool f64_b16(void* in, void* out) { *(u16*)out = *(f64*)in; return true; }
+	bool f64_b32(void* in, void* out) { *(u32*)out = *(f64*)in; return true; }
+	bool f64_b64(void* in, void* out) { *(u64*)out = *(f64*)in; return true; }
+	bool f64_f32(void* in, void* out) { *(f32*)out = *(f64*)in; return true; }
+	bool f64_f64(void* in, void* out) { *(f64*)out = *(f64*)in; return true; }
+
+	//bool struct_object(void* in, void* out) { *(Object*)out = *(Object*)(Struct*)in; return true; }
+	//bool object_struct(void* in, void* out) { *(Struct*)out = *(Struct*)(Object*)in; return true; }
+	//7 x 7
+	/*ConvFunc convs[7][7] = {
+		{ fail_all ,fail_all ,fail_all ,fail_all ,fail_all ,fail_all ,fail_all },
+		{ fail_all ,b8_b8,	  b8_b16,	b8_b32,	  b8_b64,	b8_f32,   b8_f64},
+		{ fail_all ,b16_b8,	  b16_b16,	b16_b32,  b16_b64,	b16_f32,  b16_f64 },
+		{ fail_all ,b32_b8,	  b32_b16,	b32_b32,  b32_b64,	b32_f32,  b32_f64 },
+		{ fail_all ,b64_b8,	  b64_b16,	b64_b32,  b64_b64,	b64_f32,  b64_f64 },
+		{ fail_all ,f32_b8,	  f32_b16,	f32_b32,  f32_b64,	f32_f32,  f32_f64 },
+		{ fail_all ,f64_b8,	  f64_b16,	f64_b32,  f64_b64,	f64_f32,  f64_f64 },
+	};*/
 	struct Fields : public Property
 	{
+		
 	private:
 		typedef int(Struct::*StructData);
 		typedef int(Object::*ObjectData);
@@ -65,7 +122,7 @@ namespace zhihe
 			clsType(TClass<C>::type),
 			getdata((StructData)(typename Type_Select<std::is_base_of<Object,C>::value, ObjectData, StructData>::Result)((int(C::*))dpr))
 		{
-			off = (u8*)(C*)(typename C::RootType*)(Struct*)1 - (u8*)(Struct*)1;
+			off = static_cast<s32>((u8*)(C*)(typename C::RootType*)(Struct*)1 - (u8*)(Struct*)1);
 			setdata = getdata;
 			static_assert(std::is_base_of<Struct,C>::value, "type_is_not_supported");
 		}
@@ -73,7 +130,7 @@ namespace zhihe
 			Property(TClass<T>::type, desc, props),
 			clsType(TClass<C>::type)
 		{
-			off = (u8*)(C*)(typename C::RootType*)(Struct*)1 - (u8*)(Struct*)1;
+			off = static_cast<s32>((u8*)(C*)(typename C::RootType*)(Struct*)1 - (u8*)(Struct*)1);
 			castFunction(get,set);
 		}
 		template <typename T, class C>Fields(T(C::*get)()const = 0, const char* desc = 0, PropertyDesc* props = 0) :
@@ -102,7 +159,7 @@ namespace zhihe
 			}
 			else {
 				if (outtype != type &&
-					outtype.getTypeId() != type.getTypeId() &&
+					(TYPEID_CONV_MASK & (u32)outtype.getTypeId()) != (TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
 					!type.isKindOf(outtype)){
 					LOG_E("%s casting to %s", type.getName(), outtype.getName());
 				}
@@ -116,7 +173,7 @@ namespace zhihe
 			if (setdata != getdata) {
 				typedef T(Struct::*AttrPtr)(void);
 				if (outtype != type &&
-					outtype.getTypeId() != type.getTypeId() &&
+					(TYPEID_CONV_MASK & (u32)outtype.getTypeId()) != (TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
 					!type.isKindOf(outtype))
 				{
 					LOG_E("%s casting to %s", type.getName(), outtype.getName());
@@ -128,7 +185,7 @@ namespace zhihe
 			}
 			else {
 				if (outtype != type &&
-					!(0x00FF0000 & (u32)outtype.getTypeId() & (u32)type.getTypeId()) &&
+					(TYPEID_CONV_MASK & (u32)outtype.getTypeId()) != (TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
 					!type.isKindOf(outtype))
 				{
 					LOG_E("%s casting to %s", type.getName(), outtype.getName());
@@ -164,7 +221,7 @@ namespace zhihe
 			else {
 				Type from = TClass<T>::type;
 				if (from != type &&
-					!(0x00FF0000 & (u32)from.getTypeId() &  (u32)type.getTypeId()) &&
+					(TYPEID_CONV_MASK & (u32)from.getTypeId()) != (TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
 					!from.isKindOf(type))
 				{
 					LOG_E("%s can't cast to %s", from.getName(), type.getName());
@@ -247,29 +304,6 @@ namespace zhihe
 		}
 		template<typename R, typename ...Args>
 		static R invoke_internalObject(const Methods& prop, Object* obj, Args&&... args);
-		/*{
-			typedef typename zhihe::FuncTraits<R(Object::*)(Args...)> F;
-			typedef typename F::RFuncTraits RFuncTraits;
-
-			Type argtype = RFuncTraits::TArgsRawFuncRtti::rtti;
-			if (prop.type != argtype)
-			{
-				if (prop.type == Type::vNone) {
-					LOG_E("Arg Error:Property is Null");
-				}
-				else {
-					LOG_E("Func Args Error:%s !=> %s", prop.type.getName(), argtype.getName());
-				}
-			}
-			DebugCode(
-				if (!obj->isKindOf(prop.cls)) {
-					LOG_E("Class Type Error:%s is not a %s", obj->getTypeName(), prop.cls.getName());
-				});
-			if (prop.ret != TClass<typename removeConst<R>::Type>::type) {
-				LOG_E("Return Type %s != %s", prop.ret.getName(), Type(TClass<R>::type).getName());
-			}
-			return (obj->*((typename F::RawMemberFunc)prop.func))(std::forward<Args>(args)...);
-		}*/
 		template<typename R, typename ...Args>
 		static R invoke_internalStruct(const Methods& prop, Struct* str, Args&&... args)
 		{

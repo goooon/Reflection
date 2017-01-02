@@ -275,7 +275,7 @@ namespace zhihe
         }                                                           \
         return vNull;                                               \
     }
-    #define TYPE_OFFSET(D,B) {&zhihe::TClass<B>::RunTime::rtti,(u8*)(zhihe::Struct*)(typename B::RootType*)(B*)(D*)(void*)1 - (u8*)(zhihe::Struct*)(typename D::RootType*)(D*)(void*)1}
+    #define TYPE_OFFSET(D,B) {&zhihe::TClass<B>::RunTime::rtti,static_cast<s32>((u8*)(zhihe::Struct*)(typename B::RootType*)(B*)(D*)(void*)1 - (u8*)(zhihe::Struct*)(typename D::RootType*)(D*)(void*)1)}
 
 	template <int N>
 	struct NType

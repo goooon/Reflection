@@ -31,7 +31,10 @@ public:
 
 int main()
 {
-	int i = 0;
+	int i = std::is_enum<ts::Color>::value;
+
+	const char* pp2 = TClass<ts::Color>::TypeDesc::TypeName.Name;
+	const char* ppp = TypeList<Color>::TypeDesc::TypeName.Name;
 
 	Type ttt = TClass<abcd::Color>::type;
 	Enum e = ttt.getPropertys().getEnums();

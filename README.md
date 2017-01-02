@@ -27,11 +27,13 @@ virtual inheritance of class not supported,currently int only support no more th
 		struct TBase : public Struct
 		{
 			DECL_STRUCT(TPLT(TBase, T), Struct);
-			u8 _u8_tbase;
+			u8  val8;
 			Color color;
-			void set_u8_tbase(u8 i) { _u8_tbase = i; }
-			u8   get_u8_tbase()const { return _u8_tbase; }
-			DECL_PROPERTY(TBase, FIELDS(_u8_tbase, _flag, color), METHODS(set_u8_tbase, get_u8_tbase));
+			T    tval;
+			void set_val(u8 i) { val8 = i; }
+			u8   get_val()const { return val8; }
+			void set_color(Color c){color = c;}
+			DECL_PROPERTY(TBase, FIELDS(val8, color,tval), METHODS(set_val, get_val,set_color));
 		};
 	}
 

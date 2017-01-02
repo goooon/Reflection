@@ -9,7 +9,7 @@ namespace ts
 		LOG_D(depth,"%s{}", cls);
 		Propertys& propertys = type.getPropertys();
 		const Fields* attr = propertys.getFields();
-		for (int i = 0; i < propertys.getFieldSize(); ++i) {
+		for (u32 i = 0; i < propertys.getFieldSize(); ++i) {
 			cachar* name = attr->getDesc();
 			cachar* tname = attr->getType().getName();
 			double value = 0;
@@ -54,7 +54,8 @@ namespace ts
 			case TypeId::enu:
 				attr->set(str, attr->getType().getPropertys().getEnums()[2].flag);
 				attr->get<u32>(str, value);
-				LOG_D(depth, "%s[0x%x].%s == %s",cls,str,name, attr->getType().getPropertys().getEnums()[(int)value].name);
+				LOG_D(depth, "%s[0x%x].%s == %s[%s]",cls,str,name, attr->getType().getName(), attr->getType().getPropertys().getEnums()[(int)value].name);
+				attr->set<u32>(str, 1);
 				attr++;
 				continue;
 				break;
@@ -88,7 +89,7 @@ namespace ts
 			attr++;
 		}
 		const Methods* func = propertys.getMehods();
-		for (int i = 0; i < propertys.getMethodSize(); ++i) {
+		for (u32 i = 0; i < propertys.getMethodSize(); ++i) {
 			cachar* desc = func->getDesc();
 			Type type = func->getFuncType();
 			LOG_D(depth, "%s[0x%x].%s == %s", cls, str, desc, type.getName());

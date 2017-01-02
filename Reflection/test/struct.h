@@ -1,8 +1,6 @@
 #ifndef GUARD_struct_h__
 #define GUARD_struct_h__
 #include "../hpp/reflection.h"
-#include "./display.h"
-
 using namespace zhihe;
 
 namespace ts {
@@ -77,15 +75,18 @@ namespace ts {
 		}
 	};
 
+	DECL_ENUM(Color, RED, GREEN, BLUE, YELLOW, PINK, DARK, WHITE);
 	template <typename T>
-	struct TBase : public Base
+	struct TBase : public Struct
 	{
-		DECL_STRUCT(TPLT(TBase, T), Base);
-		u8 _u8_tbase;
-		fff::Flag _flag = fff::Flag::Open;
-		void set_u8_tbase(u8 i) { _u8_tbase = i; }
-		u8   get_u8_tbase()const { return _u8_tbase; }
-		DECL_PROPERTY(TBase, FIELDS(_u8_tbase,_flag), METHODS(set_u8_tbase, get_u8_tbase));
+		DECL_STRUCT(TPLT(TBase, T), Struct);
+		u8  val8;
+		Color color;
+		T    tval;
+		void set_val(u8 i) { val8 = i; }
+		u8   get_val()const { return val8; }
+		void set_color(Color c,T& v) { color = c; }
+		DECL_PROPERTY(TBase, FIELDS(color), METHODS(set_color));
 	};
 }
 
@@ -140,7 +141,8 @@ namespace zhihe
 	}
 }
 
-#define Varr(a,b,...) Varr(__VA_ARGS__)
+#include "./display.h"
+
 namespace ts {
 	void testStruct()
 	{
@@ -155,13 +157,13 @@ namespace ts {
 		printf(rstr); printf("\r\n");
 		base.tell();
 		f64 ret;
-		printf("read _f64:%f  \r\n", ret, type.getPropertys().getField("_f64").get<f64>(&base,ret));
-		printf("write _f64:123\r\n", ret, type.getPropertys().getField("_f64").set<f64>(&base,123));
-		printf("read _f64:%f  \r\n", ret, type.getPropertys().getField("_f64").get<f64>(&base,ret));
+		printf("read _f64:%f  \r\n", type.getPropertys().getField("_f64").get<f64>(&base,ret) ? ret : 0);
+		printf("write _f64:123\r\n", type.getPropertys().getField("_f64").set<f64>(&base,123) ? ret : 0);
+		printf("read _f64:%f  \r\n", type.getPropertys().getField("_f64").get<f64>(&base,ret) ? ret : 0);
 		f64* p64 = type.getPropertys().getField("_f64").ref<f64>(&base);
 		if (p64) {
 			*p64 = 1234567;
-			printf("refraction read _f64:%f\r\n",ret, type.getPropertys().getField("_f64").get<f64>(&base,ret));
+			printf("refraction read _f64:%f\r\n",type.getPropertys().getField("_f64").get<f64>(&base,ret) ? ret : 0);
 		}
 
 		ts::RawBase rawBase;

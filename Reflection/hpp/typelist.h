@@ -18,13 +18,13 @@ namespace zhihe
 	template<size_t N, typename T, typename... TList>
 	struct typenames< N, typelist<T, TList...> >
 	{
-		constexpr static auto TypeName = TClass<T>::TypeName + internal::str(",") + typenames< N - 1, typelist<TList...> >::TypeName;
+		constexpr static auto TypeName = TClass<T>::TypeDesc::TypeName + internal::str(",") + typenames< N - 1, typelist<TList...> >::TypeName;
 	};
 
 	template<typename T, typename... TList>
 	struct typenames< 0, typelist<T, TList...> >
 	{
-		constexpr static auto TypeName = TClass<T>::TypeName;
+		constexpr static auto TypeName = TClass<T>::TypeDesc::TypeName;
 	};
 
 	template<>
@@ -52,11 +52,11 @@ namespace zhihe
 			return internal::str("void");
 		}
 		constexpr static auto TypeName = internal::str("void");
-		static  const Type type()
+		/*static  const Type type()
 		{
 			const static Type::Rtti inst = { &Type::BaseTypes::vNone,TypeName.Name,TypeName.Hash,TypeId::v,0,0,0 };
 			return inst;
-		}
+		}*/
 	};
 
 	template <typename Head, typename Tail = None>
@@ -68,11 +68,11 @@ namespace zhihe
 		}
 		constexpr static auto STypeName = toString();
 		typedef internal::typedesc1<zh_str2type(STypeName.Name)> TypeDesc;
-		static  const Type type()
+		/*static  const Type type()
 		{
 			const static Type::Rtti inst = { &Type::BaseTypes::vNone,TypeDesc::TypeName.Name,TypeDesc::TypeName.Hash,TypeId::v,0,0,0 };
 			return inst;
-		}
+		}*/
 	};
 
 	/**
@@ -97,12 +97,13 @@ namespace zhihe
 		{
 			return TClass<Head>::TypeDesc::TypeName + TypeListValues <Tail>::toRearString();
 		}
-		constexpr static auto TypeName = toString();
-		static  const Type type()
+		constexpr static auto STypeName = toString();
+		typedef internal::typedesc1<zh_str2type(STypeName.Name)> TypeDesc;
+		/*static  const Type type()
 		{
 			const static Type::Rtti inst = { &Type::BaseTypes::vNone,TypeName.Name,TypeName.Hash,TypeId::v,0,0,0 };
 			return inst;
-		}
+		}*/
 	};
 
 	// Specializations of type/value list for head types that are references and
@@ -120,20 +121,21 @@ namespace zhihe
 		{
 		}
 
-		constexpr static auto toRearString()->decltype(internal::str(",") + TClass<Head>::TypeName + internal::str("&") + TypeListValues <Tail>::toRearString())
+		constexpr static auto toRearString()->decltype(internal::str(",") + TClass<Head>::TypeDesc::TypeName + internal::str("&") + TypeListValues <Tail>::toRearString())
 		{
-			return  internal::str(",") + TClass<Head>::TypeName + internal::str("&") + TypeListValues <Tail>::toRearString();
+			return  internal::str(",") + TClass<Head>::TypeDesc::TypeName + internal::str("&") + TypeListValues <Tail>::toRearString();
 		}
-		constexpr static auto toString()->decltype(TClass<Head>::TypeName + internal::str("&") + TypeListValues <Tail>::toRearString())
+		constexpr static auto toString()->decltype(TClass<Head>::TypeDesc::TypeName + internal::str("&") + TypeListValues <Tail>::toRearString())
 		{
-			return TClass<Head>::TypeName + internal::str("&") + TypeListValues <Tail>::toRearString();
+			return TClass<Head>::TypeDesc::TypeName + internal::str("&") + TypeListValues <Tail>::toRearString();
 		}
-		constexpr static auto TypeName = toString();
-		static  const Type type()
+		constexpr static auto STypeName = toString();
+		typedef internal::typedesc1<zh_str2type(STypeName.Name)> TypeDesc;
+		/*static  const Type type()
 		{
 			const static Type::Rtti inst = { &Type::BaseTypes::vNone,TypeName.Name,TypeName.Hash,TypeId::v,0,0,0 };
 			return inst;
-		}
+		}*/
 	};
 
 	template <typename Head, typename Tail>
@@ -147,20 +149,20 @@ namespace zhihe
 		{
 		}
 
-		constexpr static auto toRearString()->decltype(internal::str(",") + TClass<Head>::TypeName + internal::str(" const&") + TypeListValues <Tail>::toRearString())
+		constexpr static auto toRearString()->decltype(internal::str(",") + TClass<Head>::TypeDesc::TypeName + internal::str(" const&") + TypeListValues <Tail>::toRearString())
 		{
-			return internal::str(",") + TClass<Head>::TypeName + internal::str(" const&") + TypeListValues <Tail>::toRearString();
+			return internal::str(",") + TClass<Head>::TypeDesc::TypeName + internal::str(" const&") + TypeListValues <Tail>::toRearString();
 		}
-		constexpr static auto toString()->decltype(TClass<Head>::TypeName + internal::str(" const&") + TypeListValues <Tail>::toRearString())
+		constexpr static auto toString()->decltype(TClass<Head>::TypeDesc::TypeName + internal::str(" const&") + TypeListValues <Tail>::toRearString())
 		{
-			return TClass<Head>::TypeName + internal::str(" const&") + TypeListValues <Tail>::toRearString();
+			return TClass<Head>::TypeDesc::TypeName + internal::str(" const&") + TypeListValues <Tail>::toRearString();
 		}
 		constexpr static auto TypeName = toString();
-		static  const Type type()
+		/*static  const Type type()
 		{
 			const static Type::Rtti inst = { &Type::BaseTypes::vNone,TypeName.Name,TypeName.Hash,TypeId::v,0,0,0 };
 			return inst;
-		}
+		}*/
 	};
 
 	//==============================================================================

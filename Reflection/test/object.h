@@ -44,7 +44,7 @@ class SubClass : public DerObject,public ts::TBase<DerObject>
 	DECL_OBJECT(TPLT(SubClass), DerObject,TBase);
 	int k;
 	int j;
-	u32 f;
+	f32 f;
 	u32 getU(int i) { return i; }
 	virtual int getJ() { return j; }
 	virtual void setJ(int j) { this->j = j; return; }
