@@ -123,9 +123,6 @@ namespace zhihe
 	{
 		typedef char one;
 		typedef long two;
-		//typedef typename T::TypeDesc  Desc;
-		//template <typename C> static one test(decltype(&T::rtti));
-		//template <typename C> static two test(...);
 	public:
 		enum {
 			value = internal::GetClass_TypeOrT<T>::value
@@ -155,8 +152,6 @@ namespace zhihe
 			static Type::Rtti rtti;
 			const static TypeId TypeIndex = TypeId::raw;
 		};
-		//template <typename T,bool>
-		//Type::Rtti TStruct<T,false>::rtti = { &BaseTypes::vNone, TStruct<T,false>::TypeDesc::TypeName.Name, TStruct<T,false>::TypeDesc::TypeName.Hash,TStruct<T,false>::TypeIndex };
 
 		template <typename T>//not enum
 		class TStruct<T, false>
@@ -169,8 +164,6 @@ namespace zhihe
 			static Type::Rtti rtti;
 			const static TypeId TypeIndex = TypeId::raw;
 		};
-		template <typename T>
-		Type::Rtti TStruct<T, false>::rtti = { &BaseTypes::vNone, TStruct<T,false>::TypeDesc::TypeName.Name, TStruct<T,false>::TypeDesc::TypeName.Hash,TStruct<T,false>::TypeIndex };
 
 		template <typename T>//enum
 		class TStruct<T,true>
@@ -185,10 +178,6 @@ namespace zhihe
 			static Type::Rtti rtti;
 			const static TypeId TypeIndex = TypeId::enu;
 		};
-		template <typename T>
-		zhihe::BaseTypes TStruct<T, true>::props[2] = { {&TClass<u32>::rtti,0},zhihe::BaseTypes::vNone };
-		template <typename T>
-		Type::Rtti TStruct<T, true>::rtti = { TStruct<T, true>::props, TStruct<T,true>::TypeDesc::TypeName.Name, TStruct<T,true>::TypeDesc::TypeName.Hash,TStruct<T,true>::TypeIndex,&TStruct<T,true>::SType::GetStaticReflection };
 
 		template <typename T, bool> struct TTp {
 			typedef typename Type_Select<std::is_base_of<Struct,T>::value, T, TStruct<T,std::is_enum<T>::value>>::Result Type;
@@ -233,27 +222,27 @@ namespace zhihe {
 	template<typename T>
 	BaseTypes TClass<T[]>::prop[2] = { { &TClass<T*>::rtti,0 },BaseTypes::vNone };
 	template<typename T>
-	Type::Rtti TClass<T[]>::rtti = { prop,TClass<T[]>::TypeDesc::TypeName.Name, 0,TypeId::arr,&ImpStaticReflection<TClass<T>::raw_type> };
+	Type::Rtti TClass<T[]>::rtti = { prop,TClass<T[]>::TypeDesc::TypeName.Name, 0,TypeId::arr,&ImpStaticReflection<typename TClass<T>::raw_type> };
 
 	template<typename T, int N>
 	BaseTypes TClass<T[N]>::prop[2] = { { &TClass<T[]>::rtti,0 },BaseTypes::vNone };
 	template<typename T, int N>
-	Type::Rtti TClass<T[N]>::rtti = { prop, TClass<T[]>::TypeDesc::TypeName.Name, N, TypeId::arr, &ImpStaticReflection<TClass<T>::raw_type> };
+	Type::Rtti TClass<T[N]>::rtti = { prop, TClass<T[]>::TypeDesc::TypeName.Name, N, TypeId::arr, &ImpStaticReflection<typename TClass<T>::raw_type> };
 
 	template<typename T>
 	BaseTypes TClass<const T>::prop[2] = { { &TClass<T>::rtti,0 },BaseTypes::vNone };
 	template<typename T>
-	Type::Rtti TClass<const T>::rtti = { prop,TClass<T>::TypeDesc::TypeName.Name, TClass<T>::TypeDesc::TypeName.Hash,TypeId::cst,&ImpStaticReflection<TClass<T>::raw_type> };
+	Type::Rtti TClass<const T>::rtti = { prop,TClass<T>::TypeDesc::TypeName.Name, TClass<T>::TypeDesc::TypeName.Hash,TypeId::cst,&ImpStaticReflection<typename TClass<T>::raw_type> };
 	template<typename T>
 
 	BaseTypes TClass<T&>::prop[2] = { { &TClass<T>::rtti,0 },BaseTypes::vNone };
 	template<typename T>
-	Type::Rtti TClass<T&>::rtti = { prop,TClass<T&>::TypeDesc::TypeName.Name, TClass<T&>::TypeDesc::TypeName.Hash,TypeId::ref,&ImpStaticReflection<TClass<T>::raw_type> };
+	Type::Rtti TClass<T&>::rtti = { prop,TClass<T&>::TypeDesc::TypeName.Name, TClass<T&>::TypeDesc::TypeName.Hash,TypeId::ref,&ImpStaticReflection<typename TClass<T>::raw_type> };
 	template<typename T>
 
 	BaseTypes TClass<T*>::prop[2] = { { &TClass<T>::rtti,0 },BaseTypes::vNone };
 	template<typename T>
-	Type::Rtti TClass<T*>::rtti = { prop,TClass<T*>::TypeDesc::TypeName.Name, TClass<T*>::TypeDesc::TypeName.Hash,TypeId::ptr,&ImpStaticReflection<TClass<T>::raw_type> };
+	Type::Rtti TClass<T*>::rtti = { prop,TClass<T*>::TypeDesc::TypeName.Name, TClass<T*>::TypeDesc::TypeName.Hash,TypeId::ptr,&ImpStaticReflection<typename TClass<T>::raw_type> };
 
 	template <typename CN>
 	class TRtti0 : public Memory
@@ -320,7 +309,7 @@ namespace zhihe {
 	template <typename CN, typename B1, typename B2, typename B3, typename B4>
 	Type::Rtti TRtti4<CN, B1, B2, B3, B4>::rtti = { TRtti4<CN, B1,B2,B3,B4>::_baseProperty,CN::TypeDesc::TypeName.Name,CN::TypeDesc::TypeName.Hash,CN::TypeIndex,&CN::GetStaticReflection,CN::NewStruct,CN::NewObject };
 
-	
+
 	struct Struct : public Memory
 	{
 		DECL_STRUCT(TPLT(Struct));
@@ -360,6 +349,15 @@ namespace zhihe {
 		static zhihe::Type type() { return rtti; };
 	};
 	zhihe::Type::Rtti TClass<void>::rtti = { &zhihe::BaseTypes::vNone,TClass<void>::TypeDesc::TypeName.Name,TClass<void>::TypeDesc::TypeName.Hash,TClass<void>::TypeIndex,&ImpStaticReflection<void>,0,0 };
+    namespace internal{
+		template <typename T>
+		Type::Rtti TStruct<T, false>::rtti = { &BaseTypes::vNone, TStruct<T,false>::TypeDesc::TypeName.Name, TStruct<T,false>::TypeDesc::TypeName.Hash,TStruct<T,false>::TypeIndex };
+
+        template <typename T>
+		zhihe::BaseTypes TStruct<T, true>::props[2] = { {&TClass<u32>::rtti,0},zhihe::BaseTypes::vNone };
+		template <typename T>
+		Type::Rtti TStruct<T, true>::rtti = { TStruct<T, true>::props, TStruct<T,true>::TypeDesc::TypeName.Name, TStruct<T,true>::TypeDesc::TypeName.Hash,TStruct<T,true>::TypeIndex,&TStruct<T,true>::SType::GetStaticReflection };
+    }
 
 	class Object : public Struct
 	{
@@ -402,7 +400,7 @@ namespace zhihe {
 #define PRIVITE_PROPERTY_OP(NAME, I, REC, RES) REC RES
 #define PRIVITE_PROPERTY_VASSIGN(NAME, X, I) {&NAME::X,QUOTE(X)},
 #define PRIVATE_PROPERTY0(...) P99_FOR(self, COUNT_ASSERT_VAR_ARGS(__VA_ARGS__), PRIVITE_PROPERTY_OP, PRIVITE_PROPERTY_VASSIGN, __VA_ARGS__)
-#define PRIVATE_PROPERTY1(...) 
+#define PRIVATE_PROPERTY1(...)
 #define PRIVATE_PROPERTY_PASTE(N,...)  P99_PASTE2(PRIVATE_PROPERTY,N)(__VA_ARGS__)
 #define DECL_METHODS(...) PRIVATE_PROPERTY_PASTE(P99_IS_EMPTY(__VA_ARGS__),__VA_ARGS__)
 #define DECL_FIELDS(...)  PRIVATE_PROPERTY_PASTE(P99_IS_EMPTY(__VA_ARGS__),__VA_ARGS__)
@@ -438,6 +436,6 @@ namespace zhihe {
 					return FlagDesc(); \
 			} \
 		};	\
-		typedef rtti_##NAME::NAME NAME; 
+		typedef rtti_##NAME::NAME NAME;
 }
 #endif

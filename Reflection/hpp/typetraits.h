@@ -83,7 +83,7 @@ namespace zhihe
 	template <class T>
 	struct convertConstRef <const T&>
 	{
-		typedef T* Type;
+		typedef const T& Type;
 	};
 	template <class T>
 	struct convertConstRef <T&>

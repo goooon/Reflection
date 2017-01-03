@@ -83,10 +83,11 @@ namespace ts {
 		u8  val8;
 		Color color;
 		T    tval;
+		int* pval;
 		void set_val(u8 i) { val8 = i; }
 		u8   get_val()const { return val8; }
-		void set_color(Color c,T& v) { color = c; }
-		DECL_PROPERTY(TBase, FIELDS(color), METHODS(set_color));
+		void set_color(Color c, const int& v, int* pv) { color = c; val8 = v; pval = pv; }
+		DECL_PROPERTY(TBase, FIELDS(color,tval,val8), METHODS(set_color,set_val));
 	};
 }
 
@@ -172,6 +173,10 @@ namespace ts {
 		display(type,(Struct*)&base);
 
 		TBase<int> ibase;
+		type = TBase<int>::type;
+		type.getPropertys().getField("tval").set<int>(&ibase, 11);
+		int val;
+		type.getPropertys().getMehod("set_color").invoke<void, Color,const int&,int*>(&ibase, Color::GREEN,4,&val);
 		display(TBase<int>::type, &ibase);
 	}
 }

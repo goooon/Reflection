@@ -152,6 +152,7 @@ namespace zhihe
 		}
 		template <typename T>T*   ref(Struct* c)const
 		{
+			if (type == Type::vNone)return vFalse;
 			Type outtype = TClass<T>::type;
 			if (setdata != getdata) {
 				LOG_E("it's a function attribute,not supported refference");
@@ -169,6 +170,7 @@ namespace zhihe
 		}
 		template <typename T,typename I>b32  get(const Struct* c,I& t)const
 		{
+			if (type == Type::vNone)return vFalse;
 			Type outtype = TClass<T>::type;
 			if (setdata != getdata) {
 				typedef T(Struct::*AttrPtr)(void);
@@ -198,6 +200,7 @@ namespace zhihe
 		}
 		template <typename T>b32  set(Struct* c, T v)const
 		{
+			if (type == Type::vNone)return vFalse;
 			if (setdata != getdata) {
 				typedef void(Struct::*AttrPtr)(T);
 				Type itype = TClass<T>::type;
@@ -354,7 +357,7 @@ namespace zhihe
 	struct Field
 	{
 		s32  offset;
-		Type clstype;
+		Type type;
 		const Fields* prop;
 		template<typename R>b32 get(Struct* str, R& r)const
 		{

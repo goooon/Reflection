@@ -343,9 +343,9 @@ namespace zhihe
 		typedef TypeList <T1, TypeList <T2> > RawParams;
 		typedef TypeList <O1, TypeList <O2> > ObjParams;
 
-		typedef R(*Func)(P1);
-		typedef TR(*RawFunc)(T1);
-		typedef OR(*ObjFunc)(O1);
+		typedef R(*Func)(P1,P2);
+		typedef TR(*RawFunc)(T1,T2);
+		typedef OR(*ObjFunc)(O1,O2);
 
 		typedef typename TClass<Func>::TypeDesc TypeDesc;
 		typedef FuncTraits TID;
@@ -391,7 +391,7 @@ namespace zhihe
 		typedef TypeList <O1, TypeList <O2, TypeList <O3> > > ObjParams;
 
 		typedef R(*Func)(P1, P2, P3);
-		typedef TR(*BaseFunc)(T1, T2, T3);
+		typedef TR(*RawFunc)(T1, T2, T3);
 		typedef OR(*ObjFunc)(O1, O2, O3);
 
 		typedef FuncTraits TID;
@@ -441,7 +441,7 @@ namespace zhihe
 		typedef TypeList <O1, TypeList <O2, TypeList <O3, TypeList <O4> > > > ObjParams;
 
 		typedef R(*Func)(P1, P2, P3, P4);
-		typedef TR(*BaseFunc)(T1, T2, T3, T4);
+		typedef TR(*RawFunc)(T1, T2, T3, T4);
 		typedef OR(*ObjFunc)(O1, O2, O3,O4);
 
 		typedef FuncTraits TID;
@@ -491,7 +491,7 @@ namespace zhihe
 		typedef TypeList <O1, TypeList <O2, TypeList <O3, TypeList <O4, TypeList <O5> > > > > ObjParams;
 
 		typedef R(*Func)(P1, P2, P3, P4, P5);
-		typedef TR(*BaseFunc)(T1, T2, T3, T4, T5);
+		typedef TR(*RawFunc)(T1, T2, T3, T4, T5);
 		typedef OR(*ObjFunc)(O1, O2, O3, O4,O5);
 
 		typedef FuncTraits TID;
@@ -543,7 +543,7 @@ namespace zhihe
 		typedef TypeList <O1, TypeList <O2, TypeList <O3, TypeList <O4, TypeList <O5, TypeList <O6> > > > > > ObjParams;
 
 		typedef R(*Func)(P1, P2, P3, P4, P5, P6);
-		typedef TR(*BaseFunc)(T1, T2, T3, T4, T5, T6);
+		typedef TR(*RawFunc)(T1, T2, T3, T4, T5, T6);
 		typedef OR(*ObjFunc)(O1, O2, O3, O4, O5,O6);
 
 		typedef FuncTraits TID;
@@ -598,7 +598,7 @@ namespace zhihe
 		typedef TypeList <O1, TypeList <O2, TypeList <O3, TypeList <O4, TypeList <O5, TypeList <O6, TypeList <O7 > > > > > > > ObjParams;
 
 		typedef R(*Func)(P1, P2, P3, P4, P5, P6, P7);
-		typedef TR(*BaseFunc)(T1, T2, T3, T4, T5, T6, T7);
+		typedef TR(*RawFunc)(T1, T2, T3, T4, T5, T6, T7);
 		typedef OR(*ObjFunc)(O1, O2, O3, O4, O5, O6,O7);
 
 		typedef FuncTraits TID;
@@ -654,7 +654,7 @@ namespace zhihe
 		typedef TypeList <O1, TypeList <O2, TypeList <O3, TypeList <O4, TypeList <O5, TypeList <O6, TypeList <O7, TypeList <O8> > > > > > > > ObjParams;
 
 		typedef R(*Func)(P1, P2, P3,P4,P5,P6,P7,P8);
-		typedef TR(*BaseFunc)(T1, T2, T3, T4, T5, T6, T7, T8);
+		typedef TR(*RawFunc)(T1, T2, T3, T4, T5, T6, T7, T8);
 		typedef OR(*ObjFunc)(O1, O2, O3, O4, O5, O6, O7,O8);
 
 		typedef FuncTraits TID;
@@ -809,7 +809,7 @@ namespace zhihe
 		typedef T ClassType;
 		typedef R ReturnType;
 
-		typedef typename convertConstRef<T>::Type TR;
+		typedef typename convertConstRef<R>::Type TR;
 		typedef typename convertConstRef<P1>::Type T1;
 		typedef typename convertConstRef<P2>::Type T2;
 		typedef typename convertConstRef<P3>::Type T3;
