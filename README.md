@@ -54,7 +54,7 @@ virtual inheritance of class not supported,currently it only support no more tha
 	
 	type.getPropertys().getField("tval").set<int>(&ibase, 11);
 	int val;
-	type.getPropertys().getMehod("set_color").invoke<void, Color,const int&,int*>(&ibase, Color::GREEN,4,&val);
+	type.getPropertys().getMethod("set_color").invoke<void, Color,const int&,int*>(&ibase, Color::GREEN,4,&val);
 	
 
 	type = TClass<int*>::type;
