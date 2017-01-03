@@ -151,7 +151,7 @@ namespace ts {
 		Type type = zhihe::TClass<ts::Base>::type;
 		printf("test Struct:size %d\r\n", sizeof(Struct));
 		printf("test ts::Base:size %d\r\n", sizeof(ts::Base));
-		Method fref = type.getPropertys().getMehod("setget");
+		Method fref = type.getPropertys().getMethod("setget");
 		printf("typename %s \r\n", fref.type.getName());
 		char* tmp = "char*";
 		char* rstr = fref.invoke<char*, f64, f32, char*, u8>(&base,64.000f,32.00f, "char*",8);
@@ -176,7 +176,7 @@ namespace ts {
 		type = TBase<int>::type;
 		type.getPropertys().getField("tval").set<int>(&ibase, 11);
 		int val;
-		type.getPropertys().getMehod("set_color").invoke<void, Color,const int&,int*>(&ibase, Color::GREEN,4,&val);
+		type.getPropertys().getMethod("set_color").invoke<void, Color,const int&,int*>(&ibase, Color::GREEN,4,&val);
 		display(TBase<int>::type, &ibase);
 	}
 }

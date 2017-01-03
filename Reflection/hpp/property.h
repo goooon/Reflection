@@ -446,7 +446,7 @@ namespace zhihe
 			funcProps = (fp);
 		}
 	public:
-		Method getMehod(const char* name)const
+		Method getMethod(const char* name)const
 		{
 			const Methods* prop = funcProps;
 			while (prop->func != vNull)
@@ -461,7 +461,7 @@ namespace zhihe
 			const BaseTypes* cprop = clstype.getBaseTypes();
 			while (cprop->rtti)
 			{
-				Method closure = cprop->rtti->getPropertys().getMehod(name);
+				Method closure = cprop->rtti->getPropertys().getMethod(name);
 				if (closure.prop->type)return{ cprop->off + closure.offset,closure.prop->type,closure.prop };
 				cprop++;
 			}
@@ -492,13 +492,13 @@ namespace zhihe
 		}
 		u32    getFieldSize()const { return attrCount; }
 		u32    getMethodSize()const { return funcCount; }
-		Method getMehod(u32 index)const
+		Method getMethod(u32 index)const
 		{
 			if (index < funcCount)return{ 0, clstype,&funcProps[index] };
 			const BaseTypes* cprop = clstype.getBaseTypes();
 			if (cprop->rtti)
 			{
-				return cprop->rtti->getPropertys().getMehod(funcCount - index);
+				return cprop->rtti->getPropertys().getMethod(funcCount - index);
 			}
 			return{ 0, Type::vNone,&funcProps[funcCount] };
 		}
@@ -513,11 +513,11 @@ namespace zhihe
 			return{ 0, Type::vNone,&attrProps[attrCount] };
 		}
 		const Fields*  getFields()const { return attrProps; }
-		const Methods* getMehods()const { return funcProps; }
+		const Methods* getMethods()const { return funcProps; }
 		Type   getClassType()const { return clstype; }
 		Enum   getEnums()const {
 			if (clstype.getTypeId() == TypeId::enu) {
-				Method method = getMehod("GetEnums");
+				Method method = getMethod("GetEnums");
 				if (method) {
 					return method.invoke<Enum>((Struct *)0);
 				}

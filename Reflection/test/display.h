@@ -88,7 +88,7 @@ namespace ts
 			LOG_D(depth, "%s[0x%x].%s == %s[%f]", cls, str, name, tname, value);
 			attr++;
 		}
-		const Methods* func = propertys.getMehods();
+		const Methods* func = propertys.getMethods();
 		for (u32 i = 0; i < propertys.getMethodSize(); ++i) {
 			cachar* desc = func->getDesc();
 			Type type = func->getFuncType();

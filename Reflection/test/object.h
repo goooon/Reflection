@@ -81,15 +81,15 @@ namespace ts {
 
 		obj = new_me SubClass();
 		display(obj);
-		Method fprop = obj->getType().getPropertys().getMehod("setJ");
+		Method fprop = obj->getType().getPropertys().getMethod("setJ");
 		fprop.invoke<void, int>(obj, 0x3456);
-		fprop = obj->getType().getPropertys().getMehod("getJ");
+		fprop = obj->getType().getPropertys().getMethod("getJ");
 		if (fprop) {
 			int getJ = fprop.invoke<int>(obj);
 			LOG_A(0x3456 == getJ, "setJ or getJ failed %d", getJ);
 		}
 
-		fprop = obj->getType().getPropertys().getMehod("floatf");
+		fprop = obj->getType().getPropertys().getMethod("floatf");
 		if (fprop) {
 			float getf = fprop.invoke<float>(obj, 1.02f);
 			LOG_A(getf == 1.02f, "floatf failed %f", getf);
