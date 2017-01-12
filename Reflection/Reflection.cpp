@@ -27,22 +27,22 @@ public:
 	{
 		DECL_ENUM(Flag4, E0, E1, E2, E3,E4);
 	};
+	int funcd(int& a,float f1, f64 f2, u16 u, f64* pf3, const u16& ua,char* p) {
+		a = 2;
+		*pf3 = 12345.12f;
+		return 0;
+	}
 };
 
 int main()
 {
-	int i = std::is_enum<ts::Color>::value;
-
-	const char* pp2 = TClass<ts::Color>::TypeDesc::TypeName.Name;
-	const char* ppp = TypeList<Color>::TypeDesc::TypeName.Name;
-
-	Type ttt = TClass<abcd::Color>::type;
+	Type ttt = TypeOf<abcd::Color>::type;
 	Enum e = ttt.getPropertys().getEnums();
 	LOG_P("enum %s:",ttt.getName());
 	for (int i = 0; i < e.getLength(); i++) {
 		LOG_P("%s(%d) ", e[i].name,e[i].flag);
 	}
-	ttt = TClass<abcd::InnerStruct::Flag4>::type;
+	ttt = TypeOf<abcd::InnerStruct::Flag4>::type;
 	LOG_P("\r\nenum %s:", ttt.getName());
 	e = ttt.getPropertys().getEnums();
 	for (int i = 0; i < e.getLength(); i++) {
@@ -57,10 +57,10 @@ int main()
 	cachar* name;
 	hash64 hash;
 	TypeId typeId;
-	BaseTypes* typeprops;
+	TypeNodes* typeprops;
 	Propertys* propertys;
 
-	type = TClass<int>::type;
+	type = TypeOf<int>::type;
 	hash = type.getHash();
 	name = type.getName();
 	typeId = type.getTypeId();
@@ -68,19 +68,18 @@ int main()
 	propertys = &type.getPropertys();
 	int* a = (int*)type.newStruct();
 
-	type = TClass<int*>::type;
+	type = TypeOf<int*>::type;
 	hash = type.getHash();
 	name = type.getName();
 	typeId = type.getTypeId();
 	typeprops = type.getBaseTypes();
 	propertys = &type.getPropertys();
 
-	type = TClass<int&>::type;
+	type = TypeOf<int&>::type;
 	hash = type.getHash();
 	name = type.getName();
 	typeId = type.getTypeId();
 	typeprops = type.getBaseTypes();
 	propertys = &type.getPropertys();
-
     return 0;
 }

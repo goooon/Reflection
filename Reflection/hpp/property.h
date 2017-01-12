@@ -12,6 +12,110 @@ namespace zhihe
 {
 	class Object;
 	class PropertyDesc;
+	struct Convertor
+	{
+		void* ptr;
+		TypeIdMask idMask;
+		Convertor() :ptr(0), idMask(TypeId::v) {}
+		Convertor(const void* v, Type type) :idMask(type.getTypeId()) {
+			ptr = const_cast<void*>(v);
+		}
+		operator u8() { return operator u64(); }
+		operator s8() { return operator u64(); }
+		operator u16() { return operator u64(); }
+		operator s16() { return operator u64(); }
+		operator u32() { return operator u64(); }
+		operator s32() { return operator u64(); }
+		operator u64() {
+			switch (idMask.getCate())
+			{
+			case TypeIdMask::CateN8:return *(u8*)ptr;
+			case TypeIdMask::CateN16:return *(u16*)ptr;
+			case TypeIdMask::CateN32:return *(u32*)ptr;
+			case TypeIdMask::CateN64:return *(u64*)ptr;
+			case TypeIdMask::CateF32:return *(f32*)ptr;
+			case TypeIdMask::CateF64:return *(f64*)ptr;
+			default:return 0;
+			}
+		}
+		operator s64() { return operator u64(); }
+		operator f32() {
+			switch (idMask.getCate())
+			{
+			case TypeIdMask::CateN8:return *(u8*)ptr;
+			case TypeIdMask::CateN16:return *(u16*)ptr;
+			case TypeIdMask::CateN32:return *(u32*)ptr;
+			case TypeIdMask::CateN64:return *(u64*)ptr;
+			case TypeIdMask::CateF32:return *(f32*)ptr;
+			case TypeIdMask::CateF64:return *(f64*)ptr;
+			default:return 0;
+			}
+		}
+		operator f64() {
+			switch (idMask.getCate())
+			{
+			case TypeIdMask::CateN8:return *(u8*)ptr;
+			case TypeIdMask::CateN16:return *(u16*)ptr;
+			case TypeIdMask::CateN32:return *(u32*)ptr;
+			case TypeIdMask::CateN64:return *(u64*)ptr;
+			case TypeIdMask::CateF32:return *(f32*)ptr;
+			case TypeIdMask::CateF64:return *(f64*)ptr;
+			default:return 0;
+			}
+		}
+		template <typename T>
+		operator T() { return *(T*)ptr; }
+
+		void operator = (u64 v) {
+			switch (idMask.getCate())
+			{
+			case TypeIdMask::CateN8:*(u8*)ptr = v; break;
+			case TypeIdMask::CateN16:*(u16*)ptr = v; break;
+			case TypeIdMask::CateN32:*(u32*)ptr = v; break;
+			case TypeIdMask::CateN64:*(u64*)ptr = v; break;
+			case TypeIdMask::CateF32:*(f32*)ptr = v; break;
+			case TypeIdMask::CateF64:*(f64*)ptr = v; break;
+			default:
+				return ;
+			}
+		}
+		void operator = (s64 v) { return operator= ((u64)v); }
+		void operator = (u32 v) { return operator= ((u64)v); }
+		void operator = (s32 v) { return operator= ((u64)v); }
+		void operator = (u16 v) { return operator= ((u64)v); }
+		void operator = (s16 v) { return operator= ((u64)v); }
+
+		void operator = (u8 v) { return operator= ((u64)v); }
+		void operator = (s8 v) { return operator= ((u64)v); }
+		void operator = (f32 v) {
+			switch (idMask.getCate())
+			{
+			case TypeIdMask::CateN8:*(u8*)ptr = v; break;
+			case TypeIdMask::CateN16:*(u16*)ptr = v; break;
+			case TypeIdMask::CateN32:*(u32*)ptr = v; break;
+			case TypeIdMask::CateN64:*(u64*)ptr = v; break;
+			case TypeIdMask::CateF32:*(f32*)ptr = v; break;
+			case TypeIdMask::CateF64:*(f64*)ptr = v; break;
+			default:
+				return;
+			}
+		}
+		void operator = (f64 v) {
+			switch (idMask.getCate())
+			{
+			case TypeIdMask::CateN8:*(u8*)ptr = v; break;
+			case TypeIdMask::CateN16:*(u16*)ptr = v; break;
+			case TypeIdMask::CateN32:*(u32*)ptr = v; break;
+			case TypeIdMask::CateN64:*(u64*)ptr = v; break;
+			case TypeIdMask::CateF32:*(f32*)ptr = v; break;
+			case TypeIdMask::CateF64:*(f64*)ptr = v; break;
+			default:
+				return;
+			}
+		}
+		template <typename T>
+		void operator = (T v) { *(T*)ptr = v; }
+	};
 	struct Property
 	{
 	public:
@@ -27,65 +131,8 @@ namespace zhihe
 		const char* desc = 0;
 		PropertyDesc* props = 0;
 	};
-	typedef bool(*ConvFunc)(void* in, void* out);
-	bool fail_all(void*, void*) { return false; }
-	bool b8_b8(void* in,void* out) { *(u8*)out = *(u8*)in; return true; }
-	bool b8_b16(void* in, void* out) { *(u16*)out = *(u8*)in; return true; }
-	bool b8_b32(void* in, void* out) { *(u32*)out = *(u8*)in; return true; }
-	bool b8_b64(void* in, void* out) { *(u64*)out = *(u8*)in; return true; }
-	bool b8_f32(void* in, void* out) { *(f32*)out = *(u8*)in; return true; }
-	bool b8_f64(void* in, void* out) { *(f64*)out = *(u8*)in; return true; }
-
-	bool b16_b8(void* in, void* out) { *(u8*)out = *(u16*)in; return true; }
-	bool b16_b16(void* in, void* out) { *(u16*)out = *(u16*)in; return true; }
-	bool b16_b32(void* in, void* out) { *(u32*)out = *(u16*)in; return true; }
-	bool b16_b64(void* in, void* out) { *(u64*)out = *(u16*)in; return true; }
-	bool b16_f32(void* in, void* out) { *(f32*)out = *(u16*)in; return true; }
-	bool b16_f64(void* in, void* out) { *(f64*)out = *(u16*)in; return true; }
-	
-	bool b32_b8(void* in, void* out) { *(u8*)out = *(u32*)in; return true; }
-	bool b32_b16(void* in, void* out) { *(u16*)out = *(u32*)in; return true; }
-	bool b32_b32(void* in, void* out) { *(u32*)out = *(u32*)in; return true; }
-	bool b32_b64(void* in, void* out) { *(u64*)out = *(u32*)in; return true; }
-	bool b32_f32(void* in, void* out) { *(f32*)out = *(u32*)in; return true; }
-	bool b32_f64(void* in, void* out) { *(f64*)out = *(u32*)in; return true; }
-
-	bool b64_b8(void* in, void* out) { *(u8*)out = *(u64*)in; return true; }
-	bool b64_b16(void* in, void* out) { *(u16*)out = *(u64*)in; return true; }
-	bool b64_b32(void* in, void* out) { *(u32*)out = *(u64*)in; return true; }
-	bool b64_b64(void* in, void* out) { *(u64*)out = *(u64*)in; return true; }
-	bool b64_f32(void* in, void* out) { *(f32*)out = *(u64*)in; return true; }
-	bool b64_f64(void* in, void* out) { *(f64*)out = *(u64*)in; return true; }
-
-	bool f32_b8(void* in, void* out) { *(u8*)out = *(f32*)in; return true; }
-	bool f32_b16(void* in, void* out) { *(u16*)out = *(f32*)in; return true; }
-	bool f32_b32(void* in, void* out) { *(u32*)out = *(f32*)in; return true; }
-	bool f32_b64(void* in, void* out) { *(u64*)out = *(f32*)in; return true; }
-	bool f32_f32(void* in, void* out) { *(f32*)out = *(f32*)in; return true; }
-	bool f32_f64(void* in, void* out) { *(f64*)out = *(f32*)in; return true; }
-
-	bool f64_b8(void* in, void* out) { *(u8*)out = *(f64*)in; return true; }
-	bool f64_b16(void* in, void* out) { *(u16*)out = *(f64*)in; return true; }
-	bool f64_b32(void* in, void* out) { *(u32*)out = *(f64*)in; return true; }
-	bool f64_b64(void* in, void* out) { *(u64*)out = *(f64*)in; return true; }
-	bool f64_f32(void* in, void* out) { *(f32*)out = *(f64*)in; return true; }
-	bool f64_f64(void* in, void* out) { *(f64*)out = *(f64*)in; return true; }
-
-	//bool struct_object(void* in, void* out) { *(Object*)out = *(Object*)(Struct*)in; return true; }
-	//bool object_struct(void* in, void* out) { *(Struct*)out = *(Struct*)(Object*)in; return true; }
-	//7 x 7
-	/*ConvFunc convs[7][7] = {
-		{ fail_all ,fail_all ,fail_all ,fail_all ,fail_all ,fail_all ,fail_all },
-		{ fail_all ,b8_b8,	  b8_b16,	b8_b32,	  b8_b64,	b8_f32,   b8_f64},
-		{ fail_all ,b16_b8,	  b16_b16,	b16_b32,  b16_b64,	b16_f32,  b16_f64 },
-		{ fail_all ,b32_b8,	  b32_b16,	b32_b32,  b32_b64,	b32_f32,  b32_f64 },
-		{ fail_all ,b64_b8,	  b64_b16,	b64_b32,  b64_b64,	b64_f32,  b64_f64 },
-		{ fail_all ,f32_b8,	  f32_b16,	f32_b32,  f32_b64,	f32_f32,  f32_f64 },
-		{ fail_all ,f64_b8,	  f64_b16,	f64_b32,  f64_b64,	f64_f32,  f64_f64 },
-	};*/
 	struct Fields : public Property
 	{
-		
 	private:
 		typedef int(Struct::*StructData);
 		typedef int(Object::*ObjectData);
@@ -109,8 +156,8 @@ namespace zhihe
 	public:
 		Fields() :setdata(0), getdata(0) {}
 		template <typename T, class C>Fields(int offset, T(C::* dpr) = 0, const char* desc = 0, PropertyDesc* props = vNull) :
-			Property(TClass<T>::type, desc, props),
-			clsType(TClass<C>::type),
+			Property(TypeOf<T>::type, desc, props),
+			clsType(TypeOf<C>::type),
 			getdata((StructData)(typename Type_Select<std::is_base_of<Object,C>::value, ObjectData, StructData>::Result)dpr)
 		{
 			off = 0;
@@ -118,8 +165,8 @@ namespace zhihe
 			static_assert(!std::is_base_of<Struct,C>::value, "type_is_not_supported");
 		}
 		template <typename T, class C>Fields(T(C::* dpr) = 0, const char* desc = 0, PropertyDesc* props = vNull) :
-			Property(TClass<T>::type, desc, props),
-			clsType(TClass<C>::type),
+			Property(TypeOf<T>::type, desc, props),
+			clsType(TypeOf<C>::type),
 			getdata((StructData)(typename Type_Select<std::is_base_of<Object,C>::value, ObjectData, StructData>::Result)((int(C::*))dpr))
 		{
 			off = static_cast<s32>((u8*)(C*)(typename C::RootType*)(Struct*)1 - (u8*)(Struct*)1);
@@ -127,22 +174,22 @@ namespace zhihe
 			static_assert(std::is_base_of<Struct,C>::value, "type_is_not_supported");
 		}
 		template <typename T, class C>Fields(T(C::*get)()const = 0, void(C::*set)(T) = 0, const char* desc = 0, PropertyDesc* props = 0) :
-			Property(TClass<T>::type, desc, props),
-			clsType(TClass<C>::type)
+			Property(TypeOf<T>::type, desc, props),
+			clsType(TypeOf<C>::type)
 		{
 			off = static_cast<s32>((u8*)(C*)(typename C::RootType*)(Struct*)1 - (u8*)(Struct*)1);
 			castFunction(get,set);
 		}
 		template <typename T, class C>Fields(T(C::*get)()const = 0, const char* desc = 0, PropertyDesc* props = 0) :
-			Property(TClass<T>::type, desc, props),
-			clsType(TClass<C>::type)
+			Property(TypeOf<T>::type, desc, props),
+			clsType(TypeOf<C>::type)
 		{
 			off = (int)(C*)(typename C::RootType*)(Struct*)1 - (int)(Struct*)1;
 			castFunction(get, nullptr);
 		}
 		template <typename T, class C>Fields(T(C::*get)() = 0, const char* desc = 0, PropertyDesc* props = 0) :
-			Property(TClass<T>::type, desc, props),
-			clsType(TClass<C>::type)
+			Property(TypeOf<T>::type, desc, props),
+			clsType(TypeOf<C>::type)
 		{
 			off = (int)(C*)(typename C::RootType*)(Struct*)1 - (int)(Struct*)1;
 			castFunction(get, nullptr);
@@ -153,14 +200,14 @@ namespace zhihe
 		template <typename T>T*   ref(Struct* c)const
 		{
 			if (type == Type::vNone)return vFalse;
-			Type outtype = TClass<T>::type;
+			Type outtype = TypeOf<T>::type;
 			if (setdata != getdata) {
 				LOG_E("it's a function attribute,not supported refference");
 				return nullptr;
 			}
 			else {
 				if (outtype != type &&
-					(TYPEID_CONV_MASK & (u32)outtype.getTypeId()) != (TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
+					(TypeIdMask::TYPEID_CONV_MASK & (u32)outtype.getTypeId()) != (TypeIdMask::TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
 					!type.isKindOf(outtype)){
 					LOG_E("%s casting to %s", type.getName(), outtype.getName());
 				}
@@ -171,11 +218,11 @@ namespace zhihe
 		template <typename T,typename I>b32  get(const Struct* c,I& t)const
 		{
 			if (type == Type::vNone)return vFalse;
-			Type outtype = TClass<T>::type;
+			Type outtype = TypeOf<T>::type;
 			if (setdata != getdata) {
 				typedef T(Struct::*AttrPtr)(void);
 				if (outtype != type &&
-					(TYPEID_CONV_MASK & (u32)outtype.getTypeId()) != (TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
+					(TypeIdMask::TYPEID_CONV_MASK & (u32)outtype.getTypeId()) != (TypeIdMask::TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
 					!type.isKindOf(outtype))
 				{
 					LOG_E("%s casting to %s", type.getName(), outtype.getName());
@@ -187,14 +234,14 @@ namespace zhihe
 			}
 			else {
 				if (outtype != type &&
-					(TYPEID_CONV_MASK & (u32)outtype.getTypeId()) != (TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
+					(TypeIdMask::TYPEID_CONV_MASK & (u32)outtype.getTypeId()) != (TypeIdMask::TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
 					!type.isKindOf(outtype))
 				{
 					LOG_E("%s casting to %s", type.getName(), outtype.getName());
 					return vFalse;
 				}
 				typedef T(Struct::*TStructData);
-				t = (c->*(TStructData)(StructData)setdata);
+				t = Convertor(&(c->*(TStructData)(StructData)setdata),type);
 				return vTrue;
 			}
 		}
@@ -203,7 +250,7 @@ namespace zhihe
 			if (type == Type::vNone)return vFalse;
 			if (setdata != getdata) {
 				typedef void(Struct::*AttrPtr)(T);
-				Type itype = TClass<T>::type;
+				Type itype = TypeOf<T>::type;
 				if (itype != type) {
 					LOG_E("%s != %s", type.getName(), itype.getName());
 					return vFalse;
@@ -222,16 +269,16 @@ namespace zhihe
 				return vTrue;
 			}
 			else {
-				Type from = TClass<T>::type;
+				Type from = TypeOf<T>::type;
 				if (from != type &&
-					(TYPEID_CONV_MASK & (u32)from.getTypeId()) != (TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
+					(TypeIdMask::TYPEID_CONV_MASK & (u32)from.getTypeId()) != (TypeIdMask::TYPEID_CONV_MASK & (u32)type.getTypeId()) &&
 					!from.isKindOf(type))
 				{
 					LOG_E("%s can't cast to %s", from.getName(), type.getName());
 					return vFalse;
 				}
 				typedef T(Struct::*TStructData);
-				(c->*(TStructData)setdata) = v;
+				Convertor(&(c->*(TStructData)setdata), type) = v;
 				return vTrue;
 			}
 		}
@@ -268,43 +315,145 @@ namespace zhihe
 			return nullptr;
 		}
 	};
+	template <typename T>
+	struct Reff2Value
+	{
+		typedef T Type;
+		static const bool isConst = false;
+	};
+	template <typename T>
+	struct Reff2Value<const T>
+	{
+		typedef T Type;
+		static const bool isConst = true;
+	};
+	template <typename T>
+	struct Reff2Value<T&>
+	{
+		typedef typename Reff2Value<T>::Type Type;
+		static const bool isConst = false;
+	};
+	template <typename T>
+	struct Reff2Value<const T&>
+	{
+		typedef typename Reff2Value<T>::Type Type;
+		static const bool isConst = true;
+	};
+	struct Delegate {
+	public:
+		Delegate() :ccf(0), mf(0) {}
+		template<typename R, typename C, typename ...Args>
+		Delegate(R(C::*mf)(Args...)) :
+			bt(FuncTraits<R(*)(Args...)>::Rtti::prop->rtti->getBaseTypes()),
+			ccf(reinterpret_cast<int (*)(void*)>((R(*)(R, Struct, Args...))&FuncTraits<R(Struct::*)(Args...)>::rcall)),
+			count(sizeof...(Args)) {
+			typedef typename Type_Select<std::is_base_of<Object, C>::value, Object, Struct>::Result Refflector;
+			typedef R(Refflector::*ObjFunc)(Args...);
+			typedef R(C::*ClsFunc)(Args...);
+			typedef void* (Refflector::*Func)(void*);
+			this->mf = (void* (Struct::*)(void*))(Func)(ObjFunc)(ClsFunc)mf;
+		}
+		
+		template<typename C, typename ...Args>
+		Delegate(void(C::*mf)(Args...)) :
+			bt(FuncTraits<void(*)(Args...)>::Rtti::prop->rtti->getBaseTypes()),
+			ccf(reinterpret_cast<int (*)(void*)>((void(*)(void*, Struct, Args...))&FuncTraits<void*(Struct::*)(Args...)>::rcall)),
+			count(sizeof...(Args)) {
+			typedef typename Type_Select<std::is_base_of<Object, C>::value, Object, Struct>::Result Refflector;
+			typedef void(Refflector::*ObjFunc)(Args...);
+			typedef void(C::*ClsFunc)(Args...);
+			typedef void* (Refflector::*Func)(void*);
+			this->mf = (void* (Struct::*)(void*))(Func)(ObjFunc)(ClsFunc)mf;
+		}
+		template<typename R, typename C, typename ...Args>
+		Delegate(R(C::*mf)(Args...)const) :
+			bt(FuncTraits<R(*)(Args...)>::Rtti::prop->rtti->getBaseTypes()),
+			ccf(reinterpret_cast<int (*)(void*)>((R(*)(R, Struct, Args...))&FuncTraits<R(Struct::*)(Args...)>::rcall)),
+			count(sizeof...(Args)) {
+			typedef typename Type_Select<std::is_base_of<Object, C>::value, Object, Struct>::Result Refflector;
+			typedef R(Refflector::*ObjFunc)(Args...);
+			typedef R(C::*ClsFunc)(Args...);
+			typedef void* (Refflector::*Func)(void*);
+			this->mf = (void* (Struct::*)(void*))(Func)(ObjFunc)(ClsFunc)mf;
+		}
+		template<typename C, typename ...Args>
+		Delegate(void(C::*mf)(Args...)const) :
+			bt(FuncTraits<void(*)(Args...)>::Rtti::prop->rtti->getBaseTypes()),
+			ccf(reinterpret_cast<int (*)(void*)>((void(*)(void*, Struct, Args...))&FuncTraits<void*(Struct::*)(Args...)>::rcall)),
+			count(sizeof...(Args)) {
+			typedef typename Type_Select<std::is_base_of<Object, C>::value, Object, Struct>::Result Refflector;
+			typedef void(Refflector::*ObjFunc)(Args...);
+			typedef void(C::*ClsFunc)(Args...);
+			typedef void* (Refflector::*Func)(void*);
+			this->mf = (void* (Struct::*)(void*))(Func)(ObjFunc)(ClsFunc)mf;
+		}
+		template<typename R, typename C, typename...  Args>
+		bool invoke(R& r, C* c, Args&&... args)const {
+			if (sizeof...(Args) != count) {
+				LOG_E("Params Count Should be %d Not %d", count, (int)sizeof...(Args));
+				return false;
+			}
+			typedef R(Struct::*MembFunc)(Args...);
+			typedef int(*CallFunc)(ValuePointer*, Struct*, R(Struct::*)(Args...), ValuePointer*...);
+			CallFunc  cf = (CallFunc)ccf;
+			Reff2Value<R>::Type rr;
+			int result = cf(&ValuePointer(&rr), (Struct*)c, (MembFunc)mf, &ValuePointer(&args)...);
+			if (result) {
+				if (result < 0) {
+					LOG_E("Return Type Should Be %s Not %s", bt[0].rtti->getName(), TypeOf<R>::type().getName());
+				}
+				else {
+					Type type[] = { TypeOf<Args>::type... };
+					LOG_E("Argument %d Type Should Be %s Not %s", result, bt[result].rtti->getName(), type[result - 1].getName());
+				}
+				return false;
+			}
+			r = rr;
+			return true;
+		}
+		template<typename R, typename C, typename...  Args>
+		R call(C* c, Args&&... args)const {
+			typedef R(Struct::*MembFunc)(Args...);
+			return (c->*(MembFunc)mf)(std::forward<Args>(args)...);
+		}
+		template<typename C, typename ...Args >
+		bool invoke(C* c, Args&&... args)const {
+			if (sizeof...(Args) != count) {
+				LOG_E("Params Count Should be %d Not %d", count, (int)sizeof...(Args));
+				return false;
+			}
+			typedef void(Struct::*MembFunc)(Args...);
+			typedef int (*CallFunc)(ValuePointer*, Struct*, void(Struct::*)(Args...), ValuePointer*...);
+			CallFunc  cf = (CallFunc)ccf;
+			void* r = 0;
+			int result = cf(&ValuePointer(&r), (Struct*)c, (MembFunc)mf, &ValuePointer(&args)...);
+			if (result) {
+				Type type[] = { TypeOf<Args>::type... };
+				LOG_E("Argument %d Type Should Be %s Not %s", result, bt[result].rtti->getName(), type[result - 1].getName());
+				return false;
+			}
+			return true;
+		}
+		operator bool()const { return mf; }
+		const TypeNodes* getArgTypes()const { return bt; }
+	private:
+		unsigned int count;
+		const TypeNodes* bt;
+		void* (Struct::*mf)(void*);
+		int (*ccf)(void*);
+	};
+
 	struct Methods : public Property
 	{
 	private:
 		typedef void* (Object::*Func)(void*);
 	public:
-		Methods() :ret(Type::vNone), cls(Type::vNone), func(0), conv(0) {}
+		Methods(){}
 		template<typename R, typename C, typename... Args>
-		Methods(R(C::*funcc)(Args...)const = 0, const char* desc = 0, PropertyDesc* props = 0) :
-			Property(Type::vNone, desc, props),
-			cls(TClass<C>::type) {
-			typedef R RetType;
-			typedef typename removeConst<RetType>::Type SR;
-            ret = TClass<SR>::type;
-			typedef typename Type_Select<std::is_base_of<Object,C>::value, Object, Struct>::Result Refflector;
-
-			typedef RetType(Refflector::*ObjFunc)(Args...);
-			typedef RetType(C::*ClsFunc)(Args...);
-			func = (Func)(ObjFunc)(ClsFunc)funcc;
-			typedef R(C::*ArgsFunc)(Args...);
-			typedef typename zhihe::FuncTraits<R(C::*)(Args...)> FuncTraitsArgs;
-			typedef typename zhihe::FuncTraits<ArgsFunc>::RFuncTraits RFuncTraits;
-			type = RFuncTraits::TArgsRawFuncRtti::rtti;
-			typedef Can_R_Conv_To_L_Strict<Object*, R> Convatable;
-			conv =  ConvertHelper<R,Convatable::value>::GetFunc();
-		}
-		template<typename R, typename C, typename... Args>Methods(R(C::*funcc)(Args...) = 0, const char* desc = 0, PropertyDesc* props = 0) :
-			Property(Type::vNone, desc, props),
-			ret(TClass<typename removeConst<R>::Type>::type),
-			cls(TClass<C>::type) {
-			typedef typename Type_Select<std::is_base_of<Object,C>::value, Object, Struct>::Result Refflector;
-			typedef R(Refflector::*ObjFunc)(Args...);
-			func = (Func)(ObjFunc)funcc;
-			typedef typename zhihe::FuncTraits<R(C::*)(Args...)>::RFuncTraits RFuncTraits;
-			type = RFuncTraits::TArgsRawFuncRtti::rtti;
-			typedef Can_R_Conv_To_L_Strict<Object*, R> Convatable;
-			conv =  ConvertHelper<R,Convatable::value>::GetFunc();
-		}
+		Methods(R(C::*mf)(Args...)const = 0, const char* desc = 0, PropertyDesc* props = 0) :
+			Property(Type::vNone, desc, props), dele(mf) {};
+		template<typename R, typename C, typename... Args>Methods(R(C::*mf)(Args...) = 0, const char* desc = 0, PropertyDesc* props = 0) :
+			Property(Type::vNone, desc, props),dele(mf) {};
 		template<typename R, typename ...Args>
 		static R invoke_internalObject(const Methods& prop, Object* obj, Args&&... args);
 		template<typename R, typename ...Args>
@@ -324,30 +473,27 @@ namespace zhihe
 					return R();
 				}
 			}
-			if (prop.ret != TClass<typename removeConst<R>::Type>::type) {
-				LOG_E("Return Type %s != %s", prop.ret.getName(), Type(TClass<R>::type).getName());
+			if (prop.ret != TypeOf<typename removeConst<R>::Type>::type) {
+				LOG_E("Return Type %s != %s", prop.ret.getName(), Type(TypeOf<R>::type).getName());
 			}
 			return (str->*((typename F::RawMemberFunc)prop.func))(std::forward<Args>(args)...);
 		}
 	public:
-		template<typename R, typename ...Args>R invoke(Object* obj, Args&&... args)const
+		template<typename R, typename ...Args>bool invoke(R& r,Struct* str, Args&&... args)const
 		{
-			return invoke_internalObject<R>(*this, obj, std::forward<Args>(args)...);
+			return dele.invoke(r,str, std::forward<Args>(args)...);
 		}
-		template<typename R, typename ...Args>R invoke(Struct* str, Args&&... args)const
+		template<typename R, typename ...Args>bool invoke(Struct* str, Args&&... args)const
 		{
-			if (cls.getTypeId() == TypeId::obj) {
-				return invoke_internalObject<R>(*this, (Object*)str, std::forward<Args>(args)...);
-			}
-			else {
-				return invoke_internalStruct<R>(*this, str, std::forward<Args>(args)...);
-			}
+			return dele.invoke(str, std::forward<Args>(args)...);
 		}
-		Type  getFuncType()const { return type; }
-		Type  ret;
-		Type  cls;
-		ConvertFunc conv;
-		Func  func;
+		template<typename R, typename ...Args>R call(Struct* str, Args&&... args)const
+		{
+			return dele.call<R>(str, std::forward<Args>(args)...);
+		}
+		operator bool() const{ return dele.operator bool(); }
+		const TypeNodes* getArgTypes()const { return dele.getArgTypes(); }
+		Delegate dele;
 		static Methods vNone;
 	private:
 
@@ -387,15 +533,18 @@ namespace zhihe
 			this->prop = that.prop;
 			return *this;
 		}
-		template<typename R, typename ...Args>R invoke(Struct* str, Args... args)const
+		template<typename R, typename ...Args>bool invoke(R& r,Struct* str, Args&&... args)const
 		{
-			return prop->invoke<R, Args...>(str, std::forward<Args>(args)...);
+			return prop->invoke<R>(r,str, std::forward<Reff2Value<Args>::Type>((Reff2Value<Args>::Type)(args))...);
 		}
-		template<typename R, typename ...Args>R invoke(Object* obj, Args... args)const
+		template<typename ...Args>bool invoke(Struct* str, Args&&... args)const
 		{
-			return prop->invoke<R, Args...>(obj, std::forward<Args>(args)...);
+			return prop->invoke<void>(str, std::forward<Reff2Value<Args>::Type>((Reff2Value<Args>::Type)(args))...);
 		}
-		
+		template<typename R, typename ...Args>R call(Struct* str, Args&&... args)const
+		{
+			return prop->call<R>(str, std::forward<Reff2Value<Args>::Type>((Reff2Value<Args>::Type)(args))...);
+		}		
 	};
 	class  Propertys
 	{
@@ -449,7 +598,7 @@ namespace zhihe
 		Method getMethod(const char* name)const
 		{
 			const Methods* prop = funcProps;
-			while (prop->func != vNull)
+			while (*prop)
 			{
 				const char* desc = prop->desc;
 				if (!strcmp(name,desc))
@@ -458,7 +607,7 @@ namespace zhihe
 				}
 				prop++;
 			}
-			const BaseTypes* cprop = clstype.getBaseTypes();
+			const TypeNodes* cprop = clstype.getBaseTypes();
 			while (cprop->rtti)
 			{
 				Method closure = cprop->rtti->getPropertys().getMethod(name);
@@ -480,7 +629,7 @@ namespace zhihe
 				}
 				prop++;
 			}
-			const BaseTypes* cprop = clstype.getBaseTypes();
+			const TypeNodes* cprop = clstype.getBaseTypes();
 			while (cprop->rtti)
 			{
 				Field closure = cprop->rtti->getPropertys().getField(name);
@@ -495,7 +644,7 @@ namespace zhihe
 		Method getMethod(u32 index)const
 		{
 			if (index < funcCount)return{ 0, clstype,&funcProps[index] };
-			const BaseTypes* cprop = clstype.getBaseTypes();
+			const TypeNodes* cprop = clstype.getBaseTypes();
 			if (cprop->rtti)
 			{
 				return cprop->rtti->getPropertys().getMethod(funcCount - index);
@@ -505,7 +654,7 @@ namespace zhihe
 		Field  getField(u32 index)const
 		{
 			if (index < attrCount)return{ 0, clstype,&attrProps[index] };
-			const BaseTypes* cprop = clstype.getBaseTypes();
+			const TypeNodes* cprop = clstype.getBaseTypes();
 			if (cprop->rtti)
 			{
 				return cprop->rtti->getPropertys().getField(attrCount - index);
@@ -519,7 +668,7 @@ namespace zhihe
 			if (clstype.getTypeId() == TypeId::enu) {
 				Method method = getMethod("GetEnums");
 				if (method) {
-					return method.invoke<Enum>((Struct *)0);
+					return method.call<Enum>((Struct *)0);
 				}
 			}
 			return{ 0,nullptr };

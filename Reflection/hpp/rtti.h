@@ -275,7 +275,7 @@ namespace zhihe
         }                                                           \
         return vNull;                                               \
     }
-    #define TYPE_OFFSET(D,B) {&zhihe::TClass<B>::RunTime::rtti,static_cast<s32>((u8*)(zhihe::Struct*)(typename B::RootType*)(B*)(D*)(void*)1 - (u8*)(zhihe::Struct*)(typename D::RootType*)(D*)(void*)1)}
+    #define TYPE_OFFSET(D,B) {&zhihe::TypeOf<B>::RunTime::rtti,static_cast<s32>((u8*)(zhihe::Struct*)(typename B::RootType*)(B*)(D*)(void*)1 - (u8*)(zhihe::Struct*)(typename D::RootType*)(D*)(void*)1)}
 
 	template <int N>
 	struct NType
@@ -291,10 +291,10 @@ namespace zhihe
 		public: typedef zhihe::internal::typedesc1<zh_str2type(#C)> TypeDesc;
 #define DECL_TEMPLATE1(C,T)  \
 		protected: typedef C self; \
-		public: typedef zhihe::internal::typedesc4<zh_str2type(#C), zh_str2type("<"), zh_str2type(zhihe::TClass<T>::TypeDesc::TypeName.Name),zh_str2type(">")> TypeDesc;
+		public: typedef zhihe::internal::typedesc4<zh_str2type(#C), zh_str2type("<"), zh_str2type(zhihe::TypeOf<T>::TypeDesc::TypeName.Name),zh_str2type(">")> TypeDesc;
 #define DECL_TEMPLATE2(C,T1,T2)  \
 		protected: typedef C self; \
-		public: typedef zhihe::internal::typedesc6<zh_str2type(#C), zh_str2type("<"), zh_str2type(zhihe::TClass<T1>::TypeDesc::TypeName.Name), zh_str2type(","), zh_str2type(zhihe::TClass<T2>::TypeDesc::TypeName.Name),zh_str2type(">")> TypeDesc;
+		public: typedef zhihe::internal::typedesc6<zh_str2type(#C), zh_str2type("<"), zh_str2type(zhihe::TypeOf<T1>::TypeDesc::TypeName.Name), zh_str2type(","), zh_str2type(zhihe::TypeOf<T2>::TypeDesc::TypeName.Name),zh_str2type(">")> TypeDesc;
 
 #define DECL_OBJECT5(B1,B2,B3,B4,B5)    \
     public:    typedef B1 base;                    \
@@ -307,7 +307,7 @@ namespace zhihe
     DECL_DERIVED(self);
 
 #define DECL_RAW_TYPE(T,s,e)	 \
-	template <>struct TClass<T>  \
+	template <>struct TypeOf<T>  \
 	{  \
 		typedef T Type;  \
 		typedef T raw_type;    \
@@ -317,7 +317,7 @@ namespace zhihe
 		static zhihe::Type::Rtti rtti; \
 		static zhihe::Type type() { return rtti; };\
 	}; \
-	zhihe::Type::Rtti TClass<T>::rtti = {&zhihe::BaseTypes::vNone,TClass<T>::TypeDesc::TypeName.Name,TClass<T>::TypeDesc::TypeName.Hash,TClass<T>::TypeIndex,&ImpStaticReflection<T>,&Wrapper<T>::newStruct,0};
+	zhihe::Type::Rtti TypeOf<T>::rtti = {&zhihe::TypeNodes::vNone,TypeOf<T>::TypeDesc::TypeName.Name,TypeOf<T>::TypeDesc::TypeName.Hash,TypeOf<T>::TypeIndex,&ImpStaticReflection<T>,&Wrapper<T>::newStruct,0};
 
 #define DECL_STRUCT0()				\
 	public:    typedef self base;								          \
@@ -459,17 +459,23 @@ namespace zhihe
 	{
 	public:
 		struct Rtti;
-		struct BaseTypes
+		struct TypeNodes
 		{
 			friend struct Type;
 			Rtti* rtti;
 			s32   off;
 		public:
-			static BaseTypes vNone;
+			static TypeNodes vNone;
 			Struct* fromDerived(Struct* raw)const
 			{
 				return (Struct*)((const u8*)raw + off);
 			}
+		};
+		struct TypeArray {
+			TypeArray(const TypeNodes* n):n(n){}
+			operator const TypeNodes*()const { return n; }
+			const TypeNodes& operator[](int i) { return n[i]; }
+			const TypeNodes* n;
 		};
 		struct Rtti
 		{
@@ -477,7 +483,7 @@ namespace zhihe
 		public:
 			typedef Type (*ID)(void);
 		public:
-			const BaseTypes* _baseTypes;
+			const TypeNodes* _baseTypes;
 			cachar* _name;
 			hash64  _hash;
 			TypeId  _index;
@@ -490,19 +496,16 @@ namespace zhihe
 			Type	   getType()const { return *this; }
 			Object*    NewObject(TRACE_MEMORY_ARGS)const { return _funcObject(TRACE_MEMORY_ARGS_IN); }
 			Struct*    NewStruct(TRACE_MEMORY_ARGS)const { return _funcStruct(TRACE_MEMORY_ARGS_IN); }
-			const BaseTypes* getBaseTypes()const { return _baseTypes; }
-			Propertys& getPropertys()const {
-				return _funcGetPropertys();
-			}
+			Propertys& getPropertys()const {return _funcGetPropertys();}
 			TypeId     getTypeId()const { return _index; }
-			b32 isExactKindOf(const Type& type) const { return type == *this; }
-			b32 isKindOf(const Type& baseClass) const
+			b32		   isExactKindOf(const Type& type) const { return type == *this; }
+			b32        isKindOf(const Type& baseClass) const
 			{
 				if (this == baseClass.rtti)
 				{
 					return vTrue;
 				}
-				for (const BaseTypes* pid = _baseTypes; pid->rtti; pid++)
+				for (const TypeNodes* pid = _baseTypes; pid->rtti; pid++)
 				{
 					if (pid->rtti->isKindOf(baseClass))
 					{
@@ -511,6 +514,7 @@ namespace zhihe
 				}
 				return vFalse;
 			}
+			const TypeNodes* getBaseTypes()const { return _baseTypes; }
 			void* downCast(void* data, Type inType)const
 			{
 				if (_baseTypes == inType.getBaseTypes())
@@ -519,7 +523,7 @@ namespace zhihe
 				}
 				u8* indata = (u8*)data;
 				void* outData;
-				for (const BaseTypes* pid = _baseTypes; pid->rtti; pid++)
+				for (const TypeNodes* pid = _baseTypes; pid->rtti; pid++)
 				{
 					outData = pid->rtti->downCast(indata - pid->off, inType);
 					if (outData != nullptr)return outData;
@@ -534,7 +538,7 @@ namespace zhihe
 				}
 				u8* indata = (u8*)data;
 				void* outData;
-				for (const BaseTypes* pid = _baseTypes; pid->rtti ; pid++)
+				for (const TypeNodes* pid = _baseTypes; pid->rtti ; pid++)
 				{
 					outData = upCast(indata + pid->off, *pid->rtti);
 					if (outData != nullptr)return outData;
@@ -560,19 +564,19 @@ namespace zhihe
 		Object*  newObject(TRACE_MEMORY_ARGS)const { return rtti->NewObject(TRACE_MEMORY_ARGS_IN); }
 		Struct*  newStruct(TRACE_MEMORY_ARGS)const { return rtti->NewStruct(TRACE_MEMORY_ARGS_IN); }
 
-		b32 isKindOf(Type type)const { return rtti->isKindOf(type); }
-		b32 isExactKindOf(Type type)const { return rtti->isExactKindOf(type); }
+		b32    isKindOf(Type type)const { return rtti->isKindOf(type); }
+		b32    isExactKindOf(Type type)const { return rtti->isExactKindOf(type); }
 		void*  downCast(void* indata, Type type)const { return rtti->downCast(indata, type); }
 		void*  upCast(void* indata, Type type)const { return rtti->upCast(indata, type); }
 		Propertys& getPropertys()const { return rtti->getPropertys(); }
-		const BaseTypes* getBaseTypes()const { return rtti->getBaseTypes(); }
+		TypeArray  getBaseTypes()const { return rtti->getBaseTypes(); }
 	private:
 		const Rtti* rtti;
 	public:
 		const static Type vNone;
 	};
-	typedef const Type::BaseTypes BaseTypes;
-	Type::BaseTypes Type::BaseTypes::vNone = { 0 };
+	typedef const Type::TypeNodes TypeNodes;
+	Type::TypeNodes Type::TypeNodes::vNone = { 0 };
 
 	const Type Type::vNone;
 	template <typename T>
@@ -587,10 +591,10 @@ namespace zhihe
 		static Struct* NewStruct() { return new_me CN(); }
 	};
 	template <typename CN, typename TN>
-	Type::Rtti RawRtti0<CN,TN>::rtti = { &zhihe::BaseTypes::vNone,RawRtti0<CN,TN>::TypeDesc::TypeName.Name,RawRtti0<CN,TN>::TypeDesc::TypeName.Hash,zhihe::TypeId::raw,&ImpStaticReflection<CN>,RawRtti0<CN,TN>::NewStruct,0 };
+	Type::Rtti RawRtti0<CN,TN>::rtti = { &zhihe::TypeNodes::vNone,RawRtti0<CN,TN>::TypeDesc::TypeName.Name,RawRtti0<CN,TN>::TypeDesc::TypeName.Hash,zhihe::TypeId::raw,&ImpStaticReflection<CN>,RawRtti0<CN,TN>::NewStruct,0 };
 
 #define DECL_REFLECT(T,N) \
-	template <>struct TClass<T> \
+	template <>struct TypeOf<T> \
 	{ \
 		typedef internal::typedesc1<zh_str2type(N)> TypeDesc; \
 		typedef zhihe::RawRtti0<T,TypeDesc> RunTime; \

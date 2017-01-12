@@ -56,12 +56,7 @@ namespace zhihe
 	typedef const wchar*    cwstr;
 	typedef u32             color;
 
-#define PTR_TYPE 3
-#define PTR_SIZE 4
-#define ENU_TYPE 3
-#define ENU_SIZE 4
 
-#define TYPEID_CONV_MASK  0x00FF0000
 	//typedef bool(*ConvFunc)(void* in, void* out);
 	//bool fail_all(void*, void*) { return false; }
 	//bool b8_b8(void* in,void* out) { *(u8*)out = *(u8*)in; return true; }
@@ -115,34 +110,76 @@ namespace zhihe
 	//	{ fail_all ,f32_b8,	  f32_b16,	f32_b32,  f32_b64,	f32_f32,  f32_f64 },
 	//	{ fail_all ,f64_b8,	  f64_b16,	f64_b32,  f64_b64,	f64_f32,  f64_f64 },
 	//};
-#define TYPE_MASK(idx,conv,size,r)	idx<<24 | size<<16 | conv<<8 | r
-	enum class TypeId {
-		//type       conv mask    size    ...
-		v = TYPE_MASK(0, 0, 0, 0),
-		boolean = TYPE_MASK(1, 1, 1, 0),
-		s8  = TYPE_MASK(2, 1, 1, 0),
-		u8  = TYPE_MASK(3, 1, 1, 0),
-		s16 = TYPE_MASK(4, 2, 2, 0),
-		u16 = TYPE_MASK(5, 2, 2, 0),
-		s32 = TYPE_MASK(6, 3, 4, 0),
-		u32 = TYPE_MASK(7, 3, 4, 0),
-		s64 = TYPE_MASK(8, 4, 8, 0),
-		u64 = TYPE_MASK(9, 4, 8, 0),
-		f32 = TYPE_MASK(10, 5, 4, 0),
-		f64 = TYPE_MASK(11, 6, 8, 0),
-		astr = TYPE_MASK(12, PTR_TYPE, PTR_SIZE, 0),
-		wstr = TYPE_MASK(13, PTR_TYPE, PTR_SIZE, 0),
-		ptr  = TYPE_MASK(14, PTR_TYPE, PTR_SIZE, 0),
-		ref  = TYPE_MASK(15, PTR_TYPE, PTR_SIZE, 0),
-		enu  = TYPE_MASK(16, ENU_TYPE, ENU_SIZE,0),
-		func = TYPE_MASK(17, PTR_TYPE, PTR_SIZE,0),
-		arr =  TYPE_MASK(18, 251, 251, 0),
-		raw	 = TYPE_MASK(19, 252, 252, 0),
-		obj	 = TYPE_MASK(20, 253, 253, 0),
-		cst	 = TYPE_MASK(21, 254, 254, 0),
-		type = TYPE_MASK(22, 255, 255, 0),
-		count = 23
+
+
+	struct TypeIdMask
+	{
+		enum  ET{};
+		
+		
+
+		const static u8 None  = 0;
+		const static u8 Bool = 1;
+		const static u8 Number =  2;
+		const static u8 Struct =  3;
+		const static u8 Object =  4;
+		const static u8 Pointer = 5;
+		const static u8 Other = 6;
+
+
+		const static u32 TYPEID_CONV_MASK = 0x00FF0000;
+		const static u32 NUMBER_MASK = 0xFF << 28;
+		enum Cate {
+			Cate0 = 0, CateN8, CateN16, CateN32, CateN64, CateF32, CateF64, CateArr, CateRaw, CateObj, CateCst, CateType,CateCount
+		};
+		const static u8 PTR_SIZE = sizeof(void*);
+		const static u8 PTR_TYPE = PTR_SIZE == 8 ? CateN64 : CateN32;
+		const static u8 ENU_SIZE = sizeof(ET);
+		const static u8 ENU_TYPE = ENU_SIZE == 8 ? CateN64 : CateN32;
+		enum class TypeId {
+#define TYPE_MASK(idx,subIdx,conv,size,signMask)	idx << 28 | subIdx<<24 | conv<<16 | size<<8 | signMask
+			//type       conv mask    size    ...
+			v = TYPE_MASK(None,0, Cate0, 0, 0),
+			boolean = TYPE_MASK(Bool,0, CateN8, 1, 0),
+			s8  = TYPE_MASK(Number,0, CateN8, 1, 7),
+			u8  = TYPE_MASK(Number, 1, CateN8, 1, 0),
+			s16 = TYPE_MASK(Number, 2, CateN16, 2, 15),
+			u16 = TYPE_MASK(Number, 3, CateN16, 2, 0),
+			s32 = TYPE_MASK(Number, 4, CateN32, 4, 31),
+			u32 = TYPE_MASK(Number, 5, CateN32, 4, 0),
+			s64 = TYPE_MASK(Number, 6, CateN64, 8, 63),
+			u64 = TYPE_MASK(Number, 7, CateN64, 8, 0),
+			f32 = TYPE_MASK(Number, 8, CateF32, 4, 31),
+			f64 = TYPE_MASK(Number, 9, CateF64, 8, 63),
+			enu = TYPE_MASK(Number, 10, ENU_TYPE, ENU_SIZE, 0),
+			ref = TYPE_MASK(Pointer, 0, PTR_TYPE, PTR_SIZE, 0),
+			ptr = TYPE_MASK(Pointer, 1, PTR_TYPE, PTR_SIZE, 0),
+			func = TYPE_MASK(Pointer,2, PTR_TYPE, PTR_SIZE, 0),
+			arr  = TYPE_MASK(Pointer,3, PTR_TYPE, 251, 0),
+			astr = TYPE_MASK(Pointer,4, PTR_TYPE, PTR_SIZE, 0),
+			wstr = TYPE_MASK(Pointer,5, PTR_TYPE, PTR_SIZE, 0),
+			
+			raw = TYPE_MASK(Struct,0, CateRaw, 252, 0),
+			obj = TYPE_MASK(Object,0, CateObj, 253, 0),
+			cst = TYPE_MASK(Other, 0, CateCst, 254, 0),
+			type = TYPE_MASK(Other,1, CateType, 255, 0),
+			count = 23
+#undef TYPE_MASK
+		};
+		
+		TypeIdMask(TypeId id) :id(id) {}
+		u32  getSign() { return 1 & (u32)id; }
+		bool isNumber() { return ((u32)id >> 28) == Number; }
+		u8   getSize() { return ((u32)id) >> 8; }
+		Cate getCate() { return (Cate)(u8)(((u32)id) >> 16); }
+		u8   getIndex() { return ((u32)id) >> 24; }
+		TypeId getTypeId() { return id; }
+		void setTypeId(TypeId idx) {id = idx; }
+	private:
+		TypeId id;
 	};
+
+	typedef TypeIdMask::TypeId TypeId;
 
 #define vNull          (0)
 #define vVoid
@@ -209,5 +246,6 @@ namespace zhihe
 	template<class T1, class T2> struct Type_Select<true, T1, T2> { typedef T1 Result; };
 }
 #include "./Rtti.h"
+
 #endif
 

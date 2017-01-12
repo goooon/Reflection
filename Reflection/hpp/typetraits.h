@@ -48,6 +48,23 @@ namespace zhihe
 	{
 		typedef T Type;
 	};
+
+	template <class T>
+	struct removeReff {
+		typedef T Type;
+	};
+
+	template <class T>
+	struct removeReff<T&>
+	{
+		typedef T* Type;
+	};
+	template <class T>
+	struct removeReff<const T&>
+	{
+		typedef T* Type;
+	};
+
 	template <class T>
 	struct removeConst
 	{
@@ -83,12 +100,12 @@ namespace zhihe
 	template <class T>
 	struct convertConstRef <const T&>
 	{
-		typedef const T& Type;
+		typedef T& Type;
 	};
 	template <class T>
 	struct convertConstRef <T&>
 	{
-		typedef T* Type;
+		typedef T& Type;
 	};
 	template <class T>
 	struct convertConstRef <const T*>
