@@ -1,5 +1,5 @@
 # Reflection
-C++ Reflection and header files only
+C++ Reflection
 
 ## Preface
 This project use c++ 11 feature to implement class data member and function member reflection and rtti;
