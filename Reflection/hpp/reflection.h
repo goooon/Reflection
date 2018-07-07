@@ -490,5 +490,5 @@ namespace zhihe {
 		typedef rtti_##NAME::NAME NAME;
 }
 
-//#include "./bitfield.h"
+#include "./bitfield.h"
 #endif
