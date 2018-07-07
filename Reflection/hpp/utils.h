@@ -1,7 +1,7 @@
 #ifndef ZHIHE_Utils_GUARD_h__
 #define ZHIHE_Utils_GUARD_h__
 
-#include "./Make.h"
+#include "./make.h"
 
 #ifndef  SAFE_DELETE
 #define  SAFE_DELETE(p) {if(p){del_me p;p=NULL;};}

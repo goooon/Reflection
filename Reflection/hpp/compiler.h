@@ -6,7 +6,7 @@
 
 #define ME_LIB
 
-#include "./Arch.h"
+#include "./arch.h"
 
 #if  defined(DEBUG) ||  defined (_DEBUG)
 #define ME_DEBUG

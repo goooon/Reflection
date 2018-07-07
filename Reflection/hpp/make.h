@@ -1,7 +1,7 @@
 #ifndef ZHIHE_Make_GUARD_H__
 #define ZHIHE_Make_GUARD_H__
 
-#include "./Compiler.h"
+#include "./compiler.h"
 
 #if ME_TARGET == ME_TARGET_WIN
 #elif ME_TARGET == ME_TARGET_ANDROID

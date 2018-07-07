@@ -1,8 +1,8 @@
 #ifndef ZHIHE_FunctionTraits_h__
 #define ZHIHE_FunctionTraits_h__
 
-#include "./TypeList.h"
-#include "./TypeTraits.h"
+#include "./typelist.h"
+#include "./typetraits.h"
 /**
 Since the throw specification is part of a function signature, the FuncTraits
 family of templates needs to be specialized for both types. The
@@ -23,6 +23,30 @@ MEBRIDGE_THROWSPEC macro controls whether we use the 'throw ()' form, or
 namespace zhihe
 {
 	template <typename T>struct TypeOf;
+	template <typename T>
+	struct Reff2Value
+	{
+		typedef T Type;
+		static const bool isConst = false;
+	};
+	template <typename T>
+	struct Reff2Value<const T>
+	{
+		typedef T Type;
+		static const bool isConst = true;
+	};
+	template <typename T>
+	struct Reff2Value<T&>
+	{
+		typedef typename Reff2Value<T>::Type Type;
+		static const bool isConst = false;
+	};
+	template <typename T>
+	struct Reff2Value<const T&>
+	{
+		typedef typename Reff2Value<T>::Type Type;
+		static const bool isConst = true;
+	};
 	//==============================================================================
 	template <typename T>struct TRaw{
 		typedef T Type;
@@ -347,7 +371,7 @@ namespace zhihe
 	DECL_TARGS_N(TArgs5, FN, RT, Params, R, P1, P2, P3, P4, P5);
 	DECL_TARGS_N(TArgs6, FN, RT, Params, R, P1, P2, P3, P4, P5, P6);
 	DECL_TARGS_N(TArgs7, FN, RT, Params, R, P1, P2, P3, P4, P5, P6, P7);
-	DECL_TARGS_N(TArgs8, FN, RT, Params, R, P1, P2, P3, P4, P5, P6, P7, P8);
+	//DECL_TARGS_N(TArgs8, FN, RT, Params, R, P1, P2, P3, P4, P5, P6, P7, P8);
 
 	template <class R, class D>
 	struct FuncTraits <R(*) () MEBRIDGE_THROWSPEC, D>
@@ -445,10 +469,10 @@ namespace zhihe
 			return fp(tvl.hd);
 		}
 		static int rcall(AnyPointer* r, R(*fun)(P1), AnyPointer* c1) {
-			Reff2Value<P1>::Type a1;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return false;
+			typename Reff2Value<P1>::Type a1;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return false;
 			bool ret = r->setValue((*fun)(a1));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -497,13 +521,13 @@ namespace zhihe
 			return fp(tvl.hd, tvl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, R(*fun)(P1, P2), AnyPointer* c1, AnyPointer* c2) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return false;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return false;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return false;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return false;
 			bool ret = r->setValue((*fun)(a1, a2));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -555,16 +579,16 @@ namespace zhihe
 			return fp(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, R(*fun)(P1, P2, P3), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return false;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return false;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return false;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return false;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return false;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return false;
 			bool ret = r->setValue((*fun)(a1, a2, a3));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -617,19 +641,19 @@ namespace zhihe
 			return fp(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, R(*fun)(P1, P2, P3, P4), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return false;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return false;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return false;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return false;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return false;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return false;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return false;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return false;
 			bool ret = r->setValue((*fun)(a1, a2, a3, a4));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -683,22 +707,22 @@ namespace zhihe
 			return fp(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, R(*fun)(P1, P2, P3, P4, P5), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return false;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return false;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return false;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return false;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return false;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return false;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return false;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return false;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return false;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return false;
 			bool ret = r->setValue((*fun)(a1, a2, a3, a4, a5));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -755,25 +779,25 @@ namespace zhihe
 			return fp(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, R(*fun)(P1, P2, P3, P4, P5, P6), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5, AnyPointer* c6) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			Reff2Value<P6>::Type a6;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return false;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return false;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return false;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return false;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return false;
-			if (!c6->toValue(&a6, TypeOf<Reff2Value<P6>::Type>::type))return false;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			typename Reff2Value<P6>::Type a6;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return false;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return false;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return false;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return false;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return false;
+			if (!c6->toValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type))return false;
 			bool ret = r->setValue((*fun)(a1, a2, a3, a4, a5, a6));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
-			c6->fromValue(&a6, TypeOf<Reff2Value<P6>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
+			c6->fromValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -831,28 +855,28 @@ namespace zhihe
 			return fp(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, R(*fun)(P1, P2, P3, P4, P5, P6, P7), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5, AnyPointer* c6, AnyPointer* c7) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			Reff2Value<P6>::Type a6;
-			Reff2Value<P7>::Type a7;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return false;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return false;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return false;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return false;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return false;
-			if (!c6->toValue(&a6, TypeOf<Reff2Value<P6>::Type>::type))return false;
-			if (!c7->toValue(&a7, TypeOf<Reff2Value<P7>::Type>::type))return false;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			typename Reff2Value<P6>::Type a6;
+			typename Reff2Value<P7>::Type a7;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return false;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return false;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return false;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return false;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return false;
+			if (!c6->toValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type))return false;
+			if (!c7->toValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type))return false;
 			bool ret = r->setValue((*fun)(a1, a2, a3, a4, a5, a6, a7));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
-			c6->fromValue(&a6, TypeOf<Reff2Value<P6>::Type>::type);
-			c7->fromValue(&a7, TypeOf<Reff2Value<P7>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
+			c6->fromValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type);
+			c7->fromValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -912,31 +936,31 @@ namespace zhihe
 			return fp(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, R(*fun)(P1, P2, P3, P4, P5, P6, P7, P8), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5, AnyPointer* c6, AnyPointer* c7, AnyPointer* c8) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			Reff2Value<P6>::Type a6;
-			Reff2Value<P7>::Type a7;
-			Reff2Value<P8>::Type a8;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return false;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return false;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return false;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return false;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return false;
-			if (!c6->toValue(&a6, TypeOf<Reff2Value<P6>::Type>::type))return false;
-			if (!c7->toValue(&a7, TypeOf<Reff2Value<P7>::Type>::type))return false;
-			if (!c8->toValue(&a8, TypeOf<Reff2Value<P8>::Type>::type))return false;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			typename Reff2Value<P6>::Type a6;
+			typename Reff2Value<P7>::Type a7;
+			typename Reff2Value<P8>::Type a8;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return false;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return false;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return false;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return false;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return false;
+			if (!c6->toValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type))return false;
+			if (!c7->toValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type))return false;
+			if (!c8->toValue(&a8, TypeOf<typename Reff2Value<P8>::Type>::type))return false;
 			bool ret = r->setValue((*fun)(a1, a2, a3, a4, a5, a6, a7, a8));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
-			c6->fromValue(&a6, TypeOf<Reff2Value<P6>::Type>::type);
-			c7->fromValue(&a7, TypeOf<Reff2Value<P7>::Type>::type);
-			c8->fromValue(&a8, TypeOf<Reff2Value<P8>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
+			c6->fromValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type);
+			c7->fromValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type);
+			c8->fromValue(&a8, TypeOf<typename Reff2Value<P8>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1021,13 +1045,13 @@ namespace zhihe
 		}
 		static R raw_call(T* obj, D fp, TypeListValues <RawParams> tvl)
 		{
-			return (obj->*fp)(a1);
+			return (obj->*fp)(tvl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1), AnyPointer* c1) {
-			Reff2Value<P1>::Type a1;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
+			typename Reff2Value<P1>::Type a1;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
 			bool ret = r->setValue((pc->*fun)(a1));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1071,13 +1095,13 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd, tvl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2), AnyPointer* c1, AnyPointer* c2) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
 			bool ret = r->setValue((pc->*fun)(a1, a2));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1124,16 +1148,16 @@ namespace zhihe
 		}
 		
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1181,19 +1205,19 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3,P4), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3,AnyPointer* c4) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return 4;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return 4;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3, a4));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1241,22 +1265,22 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3, P4,P5), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4,AnyPointer* c5) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return 4;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return 5;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return 4;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return 5;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3, a4, a5));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1304,25 +1328,25 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3, P4, P5,P6), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5, AnyPointer* c6) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			Reff2Value<P6>::Type a6;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return 4;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return 5;
-			if (!c6->toValue(&a6, TypeOf<Reff2Value<P6>::Type>::type))return 6;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			typename Reff2Value<P6>::Type a6;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return 4;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return 5;
+			if (!c6->toValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type))return 6;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3, a4, a5, a6));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
-			c6->fromValue(&a6, TypeOf<Reff2Value<P6>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
+			c6->fromValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1371,28 +1395,28 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3, P4, P5, P6,P7), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5, AnyPointer* c6, AnyPointer* c7) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			Reff2Value<P6>::Type a6;
-			Reff2Value<P7>::Type a7;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return 4;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return 5;
-			if (!c6->toValue(&a6, TypeOf<Reff2Value<P6>::Type>::type))return 6;
-			if (!c7->toValue(&a7, TypeOf<Reff2Value<P7>::Type>::type))return 7;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			typename Reff2Value<P6>::Type a6;
+			typename Reff2Value<P7>::Type a7;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return 4;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return 5;
+			if (!c6->toValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type))return 6;
+			if (!c7->toValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type))return 7;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3, a4, a5, a6, a7));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
-			c6->fromValue(&a6, TypeOf<Reff2Value<P6>::Type>::type);
-			c7->fromValue(&a7, TypeOf<Reff2Value<P7>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
+			c6->fromValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type);
+			c7->fromValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1441,32 +1465,32 @@ namespace zhihe
 		{
 			return (obj->*fp)(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.tl.tl.hd);
 		}
-		static int rcall(AnyPointer* r, T* c, R(T::*fun)(P1, P2, P3, P4, P5, P6, P7,P8), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5, AnyPointer* c6, AnyPointer* c7,AnyPointer* c8) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			Reff2Value<P6>::Type a6;
-			Reff2Value<P7>::Type a7;
-			Reff2Value<P8>::Type a8;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return 4;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return 5;
-			if (!c6->toValue(&a6, TypeOf<Reff2Value<P6>::Type>::type))return 6;
-			if (!c7->toValue(&a7, TypeOf<Reff2Value<P7>::Type>::type))return 7;
-			if (!c8->toValue(&a8, TypeOf<Reff2Value<P8>::Type>::type))return 8;
+		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3, P4, P5, P6, P7,P8), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5, AnyPointer* c6, AnyPointer* c7,AnyPointer* c8) {
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			typename Reff2Value<P6>::Type a6;
+			typename Reff2Value<P7>::Type a7;
+			typename Reff2Value<P8>::Type a8;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return 4;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return 5;
+			if (!c6->toValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type))return 6;
+			if (!c7->toValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type))return 7;
+			if (!c8->toValue(&a8, TypeOf<typename Reff2Value<P8>::Type>::type))return 8;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3, a4, a5, a6, a7, a8));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
-			c6->fromValue(&a6, TypeOf<Reff2Value<P6>::Type>::type);
-			c7->fromValue(&a7, TypeOf<Reff2Value<P7>::Type>::type);
-			c8->fromValue(&a8, TypeOf<Reff2Value<P8>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
+			c6->fromValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type);
+			c7->fromValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type);
+			c8->fromValue(&a8, TypeOf<typename Reff2Value<P8>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1511,7 +1535,7 @@ namespace zhihe
 			return (obj->*fp)();
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)()const) {
-			rr = (pc->*fun)();
+			r = (pc->*fun)();
 			return r->setValue((pc->*fun)()) ? 0 : -1;
 		}
 	};
@@ -1552,10 +1576,10 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1)const, AnyPointer* c1) {
-			Reff2Value<P1>::Type a1;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
+			typename Reff2Value<P1>::Type a1;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
 			bool ret = r->setValue((pc->*fun)(a1));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1597,13 +1621,13 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd, tvl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2)const, AnyPointer* c1, AnyPointer* c2) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
 			bool ret = r->setValue((pc->*fun)(a1, a2));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1645,16 +1669,16 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3)const, AnyPointer* c1, AnyPointer* c2, AnyPointer* c3) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			P3 a3
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1698,19 +1722,19 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3, P4)const, AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return 4;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return 4;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3, a4));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1756,22 +1780,22 @@ namespace zhihe
 				tvl.tl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3, P4, P5)const, AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return 4;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return 5;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return 4;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return 5;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3, a4, a5));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1816,25 +1840,25 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3, P4, P5, P6), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5, AnyPointer* c6) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			Reff2Value<P6>::Type a6;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return 4;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return 5;
-			if (!c6->toValue(&a6, TypeOf<Reff2Value<P6>::Type>::type))return 6;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			typename Reff2Value<P6>::Type a6;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return 4;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return 5;
+			if (!c6->toValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type))return 6;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3, a4, a5, a6));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
-			c6->fromValue(&a6, TypeOf<Reff2Value<P6>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
+			c6->fromValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1880,28 +1904,28 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3, P4, P5, P6, P7), AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5, AnyPointer* c6, AnyPointer* c7) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			Reff2Value<P6>::Type a6;
-			Reff2Value<P7>::Type a7;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return 4;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return 5;
-			if (!c6->toValue(&a6, TypeOf<Reff2Value<P6>::Type>::type))return 6;
-			if (!c7->toValue(&a7, TypeOf<Reff2Value<P7>::Type>::type))return 7;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			typename Reff2Value<P6>::Type a6;
+			typename Reff2Value<P7>::Type a7;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return 4;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return 5;
+			if (!c6->toValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type))return 6;
+			if (!c7->toValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type))return 7;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3, a4, a5, a6, a7));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
-			c6->fromValue(&a6, TypeOf<Reff2Value<P6>::Type>::type);
-			c7->fromValue(&a7, TypeOf<Reff2Value<P7>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
+			c6->fromValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type);
+			c7->fromValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};
@@ -1949,32 +1973,32 @@ namespace zhihe
 			return (obj->*fp)(tvl.hd, tvl.tl.hd, tvl.tl.tl.hd, tvl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.tl.hd, tvl.tl.tl.tl.tl.tl.tl.tl.hd);
 		}
 		static int rcall(AnyPointer* r, T* pc, R(T::*fun)(P1, P2, P3, P4, P5, P6, P7, P8)const, AnyPointer* c1, AnyPointer* c2, AnyPointer* c3, AnyPointer* c4, AnyPointer* c5, AnyPointer* c6, AnyPointer* c7, AnyPointer* c8) {
-			Reff2Value<P1>::Type a1;
-			Reff2Value<P2>::Type a2;
-			Reff2Value<P3>::Type a3;
-			Reff2Value<P4>::Type a4;
-			Reff2Value<P5>::Type a5;
-			Reff2Value<P6>::Type a6;
-			Reff2Value<P7>::Type a7;
-			Reff2Value<P8>::Type a8;
+			typename Reff2Value<P1>::Type a1;
+			typename Reff2Value<P2>::Type a2;
+			typename Reff2Value<P3>::Type a3;
+			typename Reff2Value<P4>::Type a4;
+			typename Reff2Value<P5>::Type a5;
+			typename Reff2Value<P6>::Type a6;
+			typename Reff2Value<P7>::Type a7;
+			typename Reff2Value<P8>::Type a8;
 			//if (!c->toValue(&pc, TypeOf<T*>::type))return false;
-			if (!c1->toValue(&a1, TypeOf<Reff2Value<P1>::Type>::type))return 1;
-			if (!c2->toValue(&a2, TypeOf<Reff2Value<P2>::Type>::type))return 2;
-			if (!c3->toValue(&a3, TypeOf<Reff2Value<P3>::Type>::type))return 3;
-			if (!c4->toValue(&a4, TypeOf<Reff2Value<P4>::Type>::type))return 4;
-			if (!c5->toValue(&a5, TypeOf<Reff2Value<P5>::Type>::type))return 5;
-			if (!c6->toValue(&a6, TypeOf<Reff2Value<P6>::Type>::type))return 6;
-			if (!c7->toValue(&a7, TypeOf<Reff2Value<P7>::Type>::type))return 7;
-			if (!c8->toValue(&a8, TypeOf<Reff2Value<P8>::Type>::type))return 8;
+			if (!c1->toValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type))return 1;
+			if (!c2->toValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type))return 2;
+			if (!c3->toValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type))return 3;
+			if (!c4->toValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type))return 4;
+			if (!c5->toValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type))return 5;
+			if (!c6->toValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type))return 6;
+			if (!c7->toValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type))return 7;
+			if (!c8->toValue(&a8, TypeOf<typename Reff2Value<P8>::Type>::type))return 8;
 			bool ret = r->setValue((pc->*fun)(a1, a2, a3, a4, a5, a6, a7, a8));
-			c1->fromValue(&a1, TypeOf<Reff2Value<P1>::Type>::type);
-			c2->fromValue(&a2, TypeOf<Reff2Value<P2>::Type>::type);
-			c3->fromValue(&a3, TypeOf<Reff2Value<P3>::Type>::type);
-			c4->fromValue(&a4, TypeOf<Reff2Value<P4>::Type>::type);
-			c5->fromValue(&a5, TypeOf<Reff2Value<P5>::Type>::type);
-			c6->fromValue(&a6, TypeOf<Reff2Value<P6>::Type>::type);
-			c7->fromValue(&a7, TypeOf<Reff2Value<P7>::Type>::type);
-			c8->fromValue(&a8, TypeOf<Reff2Value<P8>::Type>::type);
+			c1->fromValue(&a1, TypeOf<typename Reff2Value<P1>::Type>::type);
+			c2->fromValue(&a2, TypeOf<typename Reff2Value<P2>::Type>::type);
+			c3->fromValue(&a3, TypeOf<typename Reff2Value<P3>::Type>::type);
+			c4->fromValue(&a4, TypeOf<typename Reff2Value<P4>::Type>::type);
+			c5->fromValue(&a5, TypeOf<typename Reff2Value<P5>::Type>::type);
+			c6->fromValue(&a6, TypeOf<typename Reff2Value<P6>::Type>::type);
+			c7->fromValue(&a7, TypeOf<typename Reff2Value<P7>::Type>::type);
+			c8->fromValue(&a8, TypeOf<typename Reff2Value<P8>::Type>::type);
 			return ret ? 0 : -1;
 		}
 	};

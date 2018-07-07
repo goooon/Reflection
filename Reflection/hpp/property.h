@@ -315,30 +315,7 @@ namespace zhihe
 			return nullptr;
 		}
 	};
-	template <typename T>
-	struct Reff2Value
-	{
-		typedef T Type;
-		static const bool isConst = false;
-	};
-	template <typename T>
-	struct Reff2Value<const T>
-	{
-		typedef T Type;
-		static const bool isConst = true;
-	};
-	template <typename T>
-	struct Reff2Value<T&>
-	{
-		typedef typename Reff2Value<T>::Type Type;
-		static const bool isConst = false;
-	};
-	template <typename T>
-	struct Reff2Value<const T&>
-	{
-		typedef typename Reff2Value<T>::Type Type;
-		static const bool isConst = true;
-	};
+	
 	struct Delegate {
 	public:
 		Delegate() :ccf(0), mf(0) {}
@@ -396,7 +373,7 @@ namespace zhihe
 			typedef R(Struct::*MembFunc)(Args...);
 			typedef int(*CallFunc)(ValuePointer*, Struct*, R(Struct::*)(Args...), ValuePointer*...);
 			CallFunc  cf = (CallFunc)ccf;
-			Reff2Value<R>::Type rr;
+			typename Reff2Value<R>::Type rr;
 			int result = cf(&ValuePointer(&rr), (Struct*)c, (MembFunc)mf, &ValuePointer(&args)...);
 			if (result) {
 				if (result < 0) {
@@ -473,10 +450,10 @@ namespace zhihe
 					return R();
 				}
 			}
-			if (prop.ret != TypeOf<typename removeConst<R>::Type>::type) {
-				LOG_E("Return Type %s != %s", prop.ret.getName(), Type(TypeOf<R>::type).getName());
-			}
-			return (str->*((typename F::RawMemberFunc)prop.func))(std::forward<Args>(args)...);
+			// if (prop.ret != TypeOf<typename removeConst<R>::Type>::type) {
+			// 	LOG_E("Return Type %s != %s", prop.ret.getName(), Type(TypeOf<R>::type).getName());
+			// }
+			return (str->*((typename F::RawMemberFunc)prop.dele.mf))(std::forward<Args>(args)...);
 		}
 	public:
 		template<typename R, typename ...Args>bool invoke(R& r,Struct* str, Args&&... args)const
@@ -539,11 +516,11 @@ namespace zhihe
 		}
 		template<typename ...Args>bool invoke(Struct* str, Args&&... args)const
 		{
-			return prop->invoke<void>(str, std::forward<Reff2Value<Args>::Type>((Reff2Value<Args>::Type)(args))...);
+			return prop->invoke<void>(str, std::forward<typename Reff2Value<Args>::Type>((typename Reff2Value<Args>::Type)(args))...);
 		}
 		template<typename R, typename ...Args>R call(Struct* str, Args&&... args)const
 		{
-			return prop->call<R>(str, std::forward<Reff2Value<Args>::Type>((Reff2Value<Args>::Type)(args))...);
+			return prop->call<R>(str, std::forward<typename Reff2Value<Args>::Type>((typename Reff2Value<Args>::Type)(args))...);
 		}		
 	};
 	class  Propertys

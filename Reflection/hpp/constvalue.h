@@ -1,7 +1,7 @@
 #ifndef ZHIHE_ConstValue_h__
 #define ZHIHE_ConstValue_h__
 
-#include "./Types.h"
+#include "./types.h"
 #include <type_traits>
 namespace zhihe
 {

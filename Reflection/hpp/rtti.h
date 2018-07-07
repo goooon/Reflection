@@ -2,7 +2,7 @@
 #define ZHIHE_Rtti_GUARD_H___
 #include <typeinfo>
 #include "./types.h"
-#include "./tlString.h"
+#include "./tlstring.h"
 #include "./trace.h"
 
 #if ME_COMPILER == ME_COMPILER_GNU

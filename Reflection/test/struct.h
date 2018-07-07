@@ -115,7 +115,7 @@ namespace zhihe
 		const static Methods fp[] = {
 			{ &self::setget,"setget" },
 			Methods() };
-		static Propertys prop(TClass<self>::type, ap, fp);
+		static Propertys prop(zhihe::TypeOf<self>::type, ap, fp);
 		return prop;
 	}
 
@@ -137,7 +137,7 @@ namespace zhihe
 		const static Methods fp[] = {
 			{ &self::setget,"setget" },
 			Methods() };
-		static Propertys prop(TClass<self>::type, ap, fp);
+		static Propertys prop(zhihe::TypeOf<self>::type, ap, fp);
 		return prop;
 	}
 }
@@ -148,13 +148,13 @@ namespace ts {
 	void testStruct()
 	{
 		Base base;
-		Type type = zhihe::TClass<ts::Base>::type;
+		Type type = zhihe::TypeOf<ts::Base>::type;
 		printf("test Struct:size %d\r\n", sizeof(Struct));
 		printf("test ts::Base:size %d\r\n", sizeof(ts::Base));
 		Method fref = type.getPropertys().getMethod("setget");
 		printf("typename %s \r\n", fref.type.getName());
 		char* tmp = "char*";
-		char* rstr = fref.invoke<char*, f64, f32, char*, u8>(&base,64.000f,32.00f, "char*",8);
+		char* rstr = fref.call<char*, f64, f32, char*, u8>(&base,64.000f,32.00f, "char*",8);
 		printf(rstr); printf("\r\n");
 		base.tell();
 		f64 ret;
@@ -168,7 +168,7 @@ namespace ts {
 		}
 
 		ts::RawBase rawBase;
-		display(TClass<ts::RawBase>::type, (Struct*)&rawBase);
+		display(zhihe::TypeOf<ts::RawBase>::type, (Struct*)&rawBase);
 
 		display(type,(Struct*)&base);
 
@@ -176,7 +176,7 @@ namespace ts {
 		type = TBase<int>::type;
 		type.getPropertys().getField("tval").set<int>(&ibase, 11);
 		int val;
-		type.getPropertys().getMethod("set_color").invoke<void, Color,const int&,int*>(&ibase, Color::GREEN,4,&val);
+		type.getPropertys().getMethod("set_color").call<void, Color,const int&,int*>(&ibase, Color::GREEN,4,&val);
 		display(TBase<int>::type, &ibase);
 	}
 }

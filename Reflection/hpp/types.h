@@ -1,6 +1,6 @@
 #ifndef ZHIHE_Types_GUARD_H__
 #define ZHIHE_Types_GUARD_H__
-#include "./Utils.h"
+#include "./utils.h"
 #include <typeinfo>
 #include <stddef.h>
 #include <stdlib.h>
@@ -245,7 +245,7 @@ namespace zhihe
 	template<bool Cond, class T1 = void, class T2 = void> struct Type_Select { typedef T2 Result; };
 	template<class T1, class T2> struct Type_Select<true, T1, T2> { typedef T1 Result; };
 }
-#include "./Rtti.h"
+#include "./rtti.h"
 
 #endif
 

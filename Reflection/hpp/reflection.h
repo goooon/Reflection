@@ -3,7 +3,7 @@
 #include <type_traits>
 #include "./tlstring.h"
 #include "./rtti.h"
-#include "./ConstValue.h"
+#include "./constvalue.h"
 namespace zhihe
 {
 	template <typename TT>struct TypeOf;
@@ -265,9 +265,9 @@ namespace zhihe {
 	struct ValuePointer : public AnyPointer {
 	public:
 		template <typename T>
-		ValuePointer(const T* p) :AnyPointer(p, TypeOf<removeReff<T>::Type>::type) {}
+		ValuePointer(const T* p) :AnyPointer(p, TypeOf<typename removeReff<T>::Type>::type) {}
 		template <typename T>
-		ValuePointer(T* p) : AnyPointer(p, TypeOf<removeReff<T>::Type>::type) {}
+		ValuePointer(T* p) : AnyPointer(p, TypeOf<typename removeReff<T>::Type>::type) {}
 		virtual bool toValue(void* out, Type otype);
 		virtual bool fromValue(void* in, Type itype);
 	};
@@ -438,13 +438,13 @@ namespace zhihe {
 			}
 		}
 		DebugCode(
-			if (!obj->isKindOf(prop.cls)) {
-				LOG_E("Class Type Error:%s is not a %s", obj->getTypeName(), prop.cls.getName());
+			if (!obj->isKindOf(prop.type)) {
+				LOG_E("Class Type Error:%s is not a %s", obj->getTypeName(), prop.type.getName());
 			});
-		if (prop.ret != TypeOf<typename removeConst<R>::Type>::type) {
-			LOG_E("Return Type %s != %s", prop.ret.getName(), Type(TypeOf<R>::type).getName());
-		}
-		return (obj->*((typename F::RawMemberFunc)prop.func))(std::forward<Args>(args)...);
+		// if (prop.ret != TypeOf<typename removeConst<R>::Type>::type) {
+		// 	LOG_E("Return Type %s != %s", prop.ret.getName(), Type(TypeOf<R>::type).getName());
+		// }
+		return (obj->*((typename F::RawMemberFunc)prop.dele.mf))(std::forward<Args>(args)...);
 	}
 	
 //////////////////////////////////////////////////////////////////////////
@@ -490,5 +490,5 @@ namespace zhihe {
 		typedef rtti_##NAME::NAME NAME;
 }
 
-#include "./bitfield.h"
+//#include "./bitfield.h"
 #endif

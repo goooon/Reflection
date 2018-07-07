@@ -60,7 +60,7 @@ namespace ts
 				continue;
 				break;
 			case TypeId::ptr:
-				if (attr->getType() == TClass<f32*>::type) {
+				if (attr->getType() == zhihe::TypeOf<f32*>::type) {
 					attr->set(str, (f32*)0x123890);
 					f32* fptr;
 					attr->get<f32*>(str, fptr);
@@ -70,7 +70,7 @@ namespace ts
 				}
 				break;
 			case TypeId::arr:
-				if (attr->getType().isKindOf(TClass<char[]>::type)) {
+				if (attr->getType().isKindOf(zhihe::TypeOf<char[]>::type)) {
 					if (attr->getType().getLength() == 15) {
 						auto p= attr->ref<char[]>(str);
 						char* pstr = (char*)p;
@@ -91,12 +91,12 @@ namespace ts
 		const Methods* func = propertys.getMethods();
 		for (u32 i = 0; i < propertys.getMethodSize(); ++i) {
 			cachar* desc = func->getDesc();
-			Type type = func->getFuncType();
+			Type type = func->getType();
 			LOG_D(depth, "%s[0x%x].%s == %s", cls, str, desc, type.getName());
 			func++;
 		}
 
-		for (BaseTypes* typeprops = type.getBaseTypes(); typeprops->rtti; typeprops++) {
+		for (const TypeNodes* typeprops = type.getBaseTypes(); typeprops->rtti; typeprops++) {
 			cachar* name = typeprops->rtti->getName();
 			display(*typeprops->rtti, typeprops->fromDerived(str),depth + 1);
 		}
