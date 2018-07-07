@@ -593,15 +593,23 @@ namespace zhihe
 	template <typename CN, typename TN>
 	Type::Rtti RawRtti0<CN,TN>::rtti = { &zhihe::TypeNodes::vNone,RawRtti0<CN,TN>::TypeDesc::TypeName.Name,RawRtti0<CN,TN>::TypeDesc::TypeName.Hash,zhihe::TypeId::raw,&ImpStaticReflection<CN>,RawRtti0<CN,TN>::NewStruct,0 };
 
-#define DECL_REFLECT(T,N) \
-	template <>struct TypeOf<T> \
-	{ \
-		typedef internal::typedesc1<zh_str2type(N)> TypeDesc; \
-		typedef zhihe::RawRtti0<T,TypeDesc> RunTime; \
-		const static zhihe::TypeId TypeIndex = zhihe::TypeId::raw; \
-		static zhihe::Type type() {\
-			return RunTime::rtti; \
+#define DECL_REFLECT(T,N,F,M) \
+    namespace zhihe{ \
+	    template <> \
+		Propertys& ImpStaticReflection<T>(); \
+		template <>struct TypeOf<T> \
+		{ \
+			typedef internal::typedesc1<zh_str2type(N)> TypeDesc; \
+			typedef zhihe::RawRtti0<T,TypeDesc> RunTime; \
+			const static zhihe::TypeId TypeIndex = zhihe::TypeId::raw; \
+			static zhihe::Type type() {\
+				return RunTime::rtti; \
+			} \
+		}; \
+		template <> Propertys& ImpStaticReflection<T>() \
+		{  \
+			typedef T self;const static zhihe::Fields f[] = { DECL_##F zhihe::Fields() };; const static zhihe::Methods m[] = { DECL_##M zhihe::Methods() };static Propertys prop(zhihe::TypeOf<self>::type, f, m);return prop; \
 		} \
-	};
+	}
 }
 #endif

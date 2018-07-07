@@ -13,11 +13,11 @@ namespace ts {
 }
 
 
-namespace zhihe {
-	template <>Propertys& ImpStaticReflection<ts::RawBase>();
-	Propertys& ImpStaticBaseReflection();
-	template <>Propertys& ImpStaticReflection<ts::Base>() { return zhihe::ImpStaticBaseReflection(); };
-}
+// namespace zhihe {
+// 	template <>Propertys& ImpStaticReflection<ts::RawBase>();
+// 	Propertys& ImpStaticBaseReflection();
+// 	template <>Propertys& ImpStaticReflection<ts::Base>() { return zhihe::ImpStaticBaseReflection(); };
+// }
 
 namespace ts {
 	struct RawBase : public Struct
@@ -86,61 +86,17 @@ namespace ts {
 		int* pval;
 		void set_val(u8 i) { val8 = i; }
 		u8   get_val()const { return val8; }
-		void set_color(Color c, const int& v, int* pv) { color = c; val8 = v; pval = pv; }
+		void set_color(Color c, const int v, int* pv) { 
+			color = c; 
+			val8 = v; 
+			pval = pv; }
 		DECL_PROPERTY(TBase, FIELDS(color,tval,val8), METHODS(set_color,set_val));
 	};
 }
 
-namespace zhihe
-{
-	DECL_REFLECT(ts::Base, "Base");
-	DECL_REFLECT(ts::RawBase, "RawBase");
-	template <>
-	Propertys& ImpStaticReflection<ts::RawBase>()
-	{
-		typedef ts::RawBase self;
-		const static Fields ap[] = {
-			{ &self::_charArr,"_charArr" },
-			{ &self::_char,"_char" },
-			{ &self::_u32,"_u32" },
-			{ &self::_f64,"_f64" },
-			{ &self::_f32,"_f32" },
-			{ &self::_s32,"_s32" },
-			{ &self::_pf32,"_pf32" },
-			{ &self::_u16,"_u16" },
-			{ &self::_enum ,"_enum"},
-			{ &self::_u8,"_u8"},
-			{ &self::getU32Attr,&self::setU32Attr,"strintattr" },
-			Fields() };
-		const static Methods fp[] = {
-			{ &self::setget,"setget" },
-			Methods() };
-		static Propertys prop(zhihe::TypeOf<self>::type, ap, fp);
-		return prop;
-	}
+DECL_REFLECT(ts::Base, "Base",FIELDS(_charArr,_char,_u32,_f64,_f32,_s32,_pf32,_u16),METHODS(setget));
+DECL_REFLECT(ts::RawBase, "RawBase",FIELDS(_charArr,_char,_u32,_f64,_f32,_s32,_pf32,_u16,_enum),METHODS(setget));
 
-
-	Propertys& ImpStaticBaseReflection()
-	{
-		typedef ts::Base self;
-		const static Fields ap[] = {
-			{ &self::_charArr,"_charArr" },
-			{ &self::_char,"_char" },
-			{ &self::_u32,"_u32" },
-			{ &self::_f64,"_f64" },
-			{ &self::_f32,"_f32" },
-			{ &self::_s32,"_s32" },
-			{ &self::_pf32,"_pf32" },
-			{ &self::_u16,"_u16" },
-			{ &self::getU32Attr,&self::setU32Attr,"strintattr" },
-			Fields() };
-		const static Methods fp[] = {
-			{ &self::setget,"setget" },
-			Methods() };
-		static Propertys prop(zhihe::TypeOf<self>::type, ap, fp);
-		return prop;
-	}
-}
 
 #include "./display.h"
 
@@ -176,7 +132,7 @@ namespace ts {
 		type = TBase<int>::type;
 		type.getPropertys().getField("tval").set<int>(&ibase, 11);
 		int val;
-		type.getPropertys().getMethod("set_color").call<void, Color,const int&,int*>(&ibase, Color::GREEN,4,&val);
+		type.getPropertys().getMethod("set_color").call<void, Color,const int,int*>(&ibase, Color::GREEN,4,&val);
 		display(TBase<int>::type, &ibase);
 	}
 }

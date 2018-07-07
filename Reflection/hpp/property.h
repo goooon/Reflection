@@ -428,9 +428,9 @@ namespace zhihe
 		Methods(){}
 		template<typename R, typename C, typename... Args>
 		Methods(R(C::*mf)(Args...)const = 0, const char* desc = 0, PropertyDesc* props = 0) :
-			Property(Type::vNone, desc, props), dele(mf) {};
+			Property(TypeOf<R>::type, desc, props), dele(mf) {};
 		template<typename R, typename C, typename... Args>Methods(R(C::*mf)(Args...) = 0, const char* desc = 0, PropertyDesc* props = 0) :
-			Property(Type::vNone, desc, props),dele(mf) {};
+			Property(TypeOf<R>::type, desc, props),dele(mf) {};
 		template<typename R, typename ...Args>
 		static R invoke_internalObject(const Methods& prop, Object* obj, Args&&... args);
 		template<typename R, typename ...Args>
@@ -471,11 +471,10 @@ namespace zhihe
 		operator bool() const{ return dele.operator bool(); }
 		const TypeNodes* getArgTypes()const { return dele.getArgTypes(); }
 		Delegate dele;
-		static Methods vNone;
 	private:
 
 	};
-	zhihe::Methods Methods::vNone;
+	//zhihe::Methods Methods::vNone;
 
 	struct Field
 	{
@@ -534,7 +533,7 @@ namespace zhihe
 		) :clstype(type), attrCount(NA - 1), funcCount(NF - 1), attrProps(ap), funcProps(fp){}
 		Propertys(
 			Type type
-		) : clstype(type),attrCount(0), funcCount(0), attrProps(&Fields::vNone), funcProps(&Methods::vNone) {}
+		) : clstype(type),attrCount(0), funcCount(0), attrProps(&Fields::vNone), funcProps(&EndMethod) {}
 		template <u32 NF>
 		Propertys(
 			Type type,
@@ -544,7 +543,7 @@ namespace zhihe
 		Propertys(
 			Type type,
 			const Fields(&ap)[NA]
-		) : clstype(type), funcCount(0), attrCount(NA - 1), attrProps(ap), funcProps(&Methods::vNone){}
+		) : clstype(type), funcCount(0), attrCount(NA - 1), attrProps(ap), funcProps(&EndMethod){}
 	public:
 		template <u32 NA, u32 NF>
 		void setPropertys(
@@ -650,6 +649,8 @@ namespace zhihe
 			}
 			return{ 0,nullptr };
 		}
+	protected:
+		static Methods EndMethod;
 	private:
 		Type clstype;
 		u32 attrCount;
@@ -657,5 +658,6 @@ namespace zhihe
 		const Fields* attrProps;
 		const Methods* funcProps;
 	};
+	Methods Propertys::EndMethod;
 }
 #endif
