@@ -1,3 +1,11 @@
+#### PROJECT SETUP ####
+#sudo apt install g++
+#sudo apt install gcc
+#sudo add-apt-repository ppa:ubuntu-desktop/ubuntu-make
+#sudo apt update
+#sudo apt install ubuntu-make
+#sudo apt-get install  gcc automake autoconf libtool make
+
 #### PROJECT SETTINGS ####
 # The name of the executable to be created
 BIN_NAME := hello

@@ -128,7 +128,7 @@ namespace zhihe
 
 
 		const static u32 TYPEID_CONV_MASK = 0x00FF0000;
-		const static u32 NUMBER_MASK = 0xFF << 28;
+		//const static u32 NUMBER_MASK = 0xFF << 28;
 		enum Cate {
 			Cate0 = 0, CateN8, CateN16, CateN32, CateN64, CateF32, CateF64, CateArr, CateRaw, CateObj, CateCst, CateType,CateCount
 		};
