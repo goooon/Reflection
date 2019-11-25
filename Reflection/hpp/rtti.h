@@ -306,6 +306,7 @@ namespace zhihe
     DECL_RTTI_CORE(self,TypeName.Name,TypeName.Hash,B1,B2,B3,B4,B5,0);    \
     DECL_DERIVED(self);
 
+#ifdef ME_COMPILER_HEADER_ONLY
 #define DECL_RAW_TYPE(T,s,e)	 \
 	template <>struct TypeOf<T>  \
 	{  \
@@ -318,6 +319,19 @@ namespace zhihe
 		static zhihe::Type type() { return rtti; };\
 	}; \
 	zhihe::Type::Rtti TypeOf<T>::rtti = {&zhihe::TypeNodes::vNone,TypeOf<T>::TypeDesc::TypeName.Name,TypeOf<T>::TypeDesc::TypeName.Hash,TypeOf<T>::TypeIndex,&ImpStaticReflection<T>,&Wrapper<T>::newStruct,0};
+#else
+	#define DECL_RAW_TYPE(T,s,e)	 \
+	template <>struct TypeOf<T>  \
+	{  \
+		typedef T Type;  \
+		typedef T raw_type;    \
+		typedef T obj_type;   \
+        const static TypeId TypeIndex = e; \
+		typedef zhihe::internal::typedesc1<zh_str2type(s)> TypeDesc; \
+		static zhihe::Type::Rtti rtti; \
+		static zhihe::Type type() { return rtti; };\
+	};
+#endif
 
 #define DECL_STRUCT0()				\
 	public:    typedef self base;								          \
@@ -437,6 +451,7 @@ namespace zhihe
 #define PRIVATE_STRUCT_CHOOSE_HELPER2(count)  PRIVATE_STRUCT_HELPER##count
 #define PRIVATE_STRUCT_CHOOSE_HELPER1(count)  PRIVATE_STRUCT_CHOOSE_HELPER2(count)
 #define PRIVATE_STRUCT_CHOOSE_HELPER(count)   PRIVATE_STRUCT_CHOOSE_HELPER1(count)
+
 
 #define DECL_STRUCT(...)      PRIVATE_ARGS_GLUE(PRIVATE_STRUCT_CHOOSE_HELPER(COUNT_ASSERT_VAR_ARGS(__VA_ARGS__)), (__VA_ARGS__))
 	struct Struct;
@@ -576,9 +591,12 @@ namespace zhihe
 		const static Type vNone;
 	};
 	typedef const Type::TypeNodes TypeNodes;
+#ifdef ME_COMPILER_HEADER_ONLY
 	Type::TypeNodes Type::TypeNodes::vNone = { 0 };
-
 	const Type Type::vNone;
+#endif
+
+	
 	template <typename T>
 	Propertys& ImpStaticReflection();
 

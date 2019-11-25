@@ -295,9 +295,9 @@ namespace zhihe
 		Type   clsType;
 		static Fields vNone;
 	};
-
+#ifdef ME_COMPILER_HEADER_ONLY
 	zhihe::Fields Fields::vNone;
-
+#endif
 	typedef Object* (*ConvertFunc)(void* p);
 
 	template <typename R,bool>struct ConvertHelper
@@ -658,6 +658,8 @@ namespace zhihe
 		const Fields* attrProps;
 		const Methods* funcProps;
 	};
+#ifdef ME_COMPILER_HEADER_ONLY
 	Methods Propertys::EndMethod;
+#endif
 }
 #endif

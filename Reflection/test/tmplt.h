@@ -31,7 +31,7 @@ namespace ts
 		DECL_PROPERTY(TDerivedObject, FIELDS(_char), METHODS());
 		DECL_OBJECT(TPLT(TDerivedObject, T), BASE1, TStruct<T>);
 	public:
-		char* _char = "TDerivedObject";
+		const char* _char = "TDerivedObject";
 	public:
         int method() { return 0; }
 	};

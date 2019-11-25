@@ -307,6 +307,7 @@ namespace zhihe
 		void* ptr;
 		Type  type;
 	};
+#ifdef ME_COMPILER_HEADER_ONLY
 	AnyPointer::ConvFunc AnyPointer::convs[TypeIdMask::CateCount][TypeIdMask::CateCount] = {
 		{ void_all ,fail_all ,fail_all ,fail_all ,fail_all ,fail_all ,fail_all,fail_all ,fail_all ,fail_all ,fail_all ,fail_all },
 		{ fail_all ,b8_b8,	  b8_b16,	b8_b32,	  b8_b64,	b8_f32,   b8_f64  ,fail_all ,fail_all ,fail_all ,fail_all ,fail_all },
@@ -321,7 +322,7 @@ namespace zhihe
 		{ fail_all ,fail_all ,fail_all ,fail_all ,fail_all ,fail_all ,fail_all,fail_all ,fail_all ,fail_all ,fail_all ,fail_all },
 		{ fail_all ,fail_all ,fail_all ,fail_all ,fail_all ,fail_all ,fail_all,fail_all ,fail_all ,fail_all ,fail_all ,fail_all },
 	};
-
+#endif
 	template <class F>
 	struct FuncRtti {
 		static TypeNodes prop[4];

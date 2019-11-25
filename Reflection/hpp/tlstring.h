@@ -74,7 +74,7 @@ namespace zhihe
 			return (*str) ? (*(str + 1)) ? (((*str) * const_expr::prime + const_expr::basis) ^ make_hash_static(str + 1)) : ((*str) * const_expr::prime + const_expr::basis) : 0;
 		}
 
-		constexpr hash64 operator "" _hash(char const* p, size_t)
+		constexpr hash64 operator "" _hash(char const* p)
 		{
 			return make_hash_static(p);
 		}

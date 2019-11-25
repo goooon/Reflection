@@ -275,9 +275,9 @@ namespace zhihe {
 }
 #include "./property.h"
 namespace zhihe {
-
+#ifdef ME_COMPILER_HEADER_ONLY
 	Type::Rtti None::rtti = { &Type::TypeNodes::vNone,None::TypeDesc::TypeName.Name,None::TypeDesc::TypeName.Hash,TypeId::v,&ImpStaticReflection<None> };
-
+#endif
 	template <typename CN>
 	class TRtti0 : public Memory
 	{
@@ -348,6 +348,8 @@ namespace zhihe {
 		DECL_STRUCT(TPLT(Struct));
 		public:  static Propertys& GetClassProperty(Propertys& prop) { return prop; }
 	};
+
+#ifdef ME_COMPILER_HEADER_ONLY
 	bool ValuePointer::toValue(void* out, Type otype) {
 		if (otype.getTypeId() == TypeId::raw) {
 			if (type.getTypeId() == TypeId::obj) {
@@ -366,6 +368,7 @@ namespace zhihe {
 		}
 		return AnyPointer::fromValue(in, itype);
 	}
+#endif
 	template <typename T>
 	struct Wrapper{
         T t;
@@ -399,8 +402,12 @@ namespace zhihe {
 		static zhihe::Type::Rtti rtti;
 		static zhihe::Type type() { return rtti; };
 	};
+	
+#ifdef ME_COMPILER_HEADER_ONLY
 	zhihe::Type::Rtti TypeOf<void>::rtti = { &zhihe::TypeNodes::vNone,TypeOf<void>::TypeDesc::TypeName.Name,TypeOf<void>::TypeDesc::TypeName.Hash,TypeOf<void>::TypeIndex,&ImpStaticReflection<void>,0,0 };
-    namespace internal{
+#endif
+
+	namespace internal{
 		template <typename T>
 		Type::Rtti TStruct<T, false>::rtti = { &TypeNodes::vNone, TStruct<T,false>::TypeDesc::TypeName.Name, TStruct<T,false>::TypeDesc::TypeName.Hash,TStruct<T,false>::TypeIndex };
 
