@@ -1,0 +1,13 @@
+/.project
+out
+build
+bin
+
+.git
+
+linux.debug
+mingw.debug
+out.linux
+out.mingw
+.deps
+dep.module
