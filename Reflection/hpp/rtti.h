@@ -229,10 +229,10 @@ namespace zhihe
 
 #ifdef TRACE_MEMORY
 #define TRACE_MEMORY_ARGS const char* func, u32 line
-#define TRACE_MEMORY_ARGS_IN fun,line
-#define ObjectNew(D) static zhihe::Object* NewObject(const char* file,zhihe::u32 line){return new (line,file,TypeName.Name) D();} \
-                     static zhihe::Struct* NewStruct(const char* file,zhihe::u32 line){return (zhihe::Struct*)(D::RootType*)new (line,file,TypeName.Name) D();}
-#define StructNew(D) static zhihe::Struct* NewStruct(const char* file,zhihe::u32 line){return new (line,file,TypeName.Name) D();} \
+#define TRACE_MEMORY_ARGS_IN func,line
+#define ObjectNew(D) static zhihe::Object* NewObject(const char* file,zhihe::u32 line){return new (line,file,D::TypeDesc::TypeName.Name) D();} \
+                     static zhihe::Struct* NewStruct(const char* file,zhihe::u32 line){return (zhihe::Struct*)(D::RootType*)new (line,file,D::TypeDesc::TypeName.Name) D();}
+#define StructNew(D) static zhihe::Struct* NewStruct(const char* file,zhihe::u32 line){return new (line,file,D::TypeDesc::TypeName.Name) D();} \
 					 static zhihe::Object* NewObject(const char* file,zhihe::u32 line){return 0;}
 #else
 #define TRACE_MEMORY_ARGS
